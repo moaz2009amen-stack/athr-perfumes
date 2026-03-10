@@ -734,7 +734,8 @@
 
     if (!orders.length) { tbody.innerHTML = '<tr class="empty-row"><td colspan="7">لا توجد طلبات بعد</td></tr>'; return; }
 
-    tbody.innerHTML = orders.map(o => {
+    window.ordersCache = orders;
+    tbody.innerHTML = orders.map((o, idx) => {
       const date = new Date(o.created_at).toLocaleDateString('ar-EG', { day: 'numeric', month: 'short', year: 'numeric' });
       return `<tr>
         <td><span style="color:var(--gold);font-family:'Playfair Display',serif;">${o.order_number}</span></td>
@@ -743,7 +744,7 @@
         <td style="color:var(--gold);">${o.total} جنيه</td>
         <td>${statusLabels[o.status] || o.status}</td>
         <td style="color:var(--gray);font-size:12px;">${date}</td>
-        <td><button class="action-btn edit" onclick="openOrderDetail(${JSON.stringify(o).replace(/'/g, "&#39;")})">التفاصيل</button></td>
+        <td><button class="action-btn edit" onclick="openOrderDetail(${idx})">التفاصيل</button></td>
       </tr>`;
     }).join('');
     } catch(e) {
@@ -751,7 +752,9 @@
     }
   }
 
-  function openOrderDetail(order) {
+  function openOrderDetail(idx) {
+    const order = window.ordersCache[idx];
+    if (!order) return;
     currentOrderId = order.id;
     document.getElementById('detailOrderNum').textContent = order.order_number;
     const date = new Date(order.created_at).toLocaleDateString('ar-EG', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
