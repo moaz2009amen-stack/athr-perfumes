@@ -691,6 +691,7 @@
       <div class="detail-row"><span class="detail-label">رقم الهاتف</span><span class="detail-value">${order.customer_phone}</span></div>
       <div class="detail-row"><span class="detail-label">العنوان</span><span class="detail-value">${order.customer_address}</span></div>
       ${order.tracking_note ? `<div class="detail-row"><span class="detail-label">ملاحظة التتبع</span><span class="detail-value">${order.tracking_note}</span></div>` : ''}
+      ${order.location_link ? `<div class="detail-row"><span class="detail-label">موقع العميل</span><span class="detail-value"><a href="${order.location_link}" target="_blank" style="color:var(--gold);">📍 عرض على الخريطة</a></span></div>` : ''}
     `;
     document.getElementById('orderDetailOverlay').classList.add('active');
   }
