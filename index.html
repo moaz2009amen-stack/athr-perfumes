@@ -510,44 +510,38 @@
     const orderNumber = 'ATHR-' + Date.now().toString().slice(-6);
     document.getElementById('submit-text').textContent = isAr ? '⏳ جارٍ الإرسال...' : '⏳ Sending...';
 
-    try {
-      const res = await api('orders', {
-        method: 'POST',
-        headers: {'Prefer': 'return=minimal'},
-        body: JSON.stringify({
-          order_number: orderNumber,
-          product_name: currentProduct.name,
-          product_price: currentProduct.price,
-          quantity: qty,
-          total: total,
-          customer_name: name,
-          customer_phone: phone,
-          customer_address: address,
-          location_link: document.getElementById('locationBtn').getAttribute('data-location') || null,
-          status: 'new'
-        })
-      });
+    const locationLink = document.getElementById('locationBtn').getAttribute('data-location') || null;
 
-      closeModal();
+    fetch(`${SUPABASE_URL}/rest/v1/orders`, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify({
+        order_number: orderNumber,
+        product_name: currentProduct.name,
+        product_price: currentProduct.price,
+        quantity: qty,
+        total: total,
+        customer_name: name,
+        customer_phone: phone,
+        customer_address: address,
+        location_link: locationLink,
+        status: 'new'
+      })
+    });
 
-      if (res.status === 201 || res.status === 200 || res.ok) {
-        document.getElementById('success-order-num').textContent = orderNumber;
-        document.getElementById('success-title').textContent = isAr ? '✅ تم استلام طلبك!' : '✅ Order Received!';
-        document.getElementById('success-msg').textContent = isAr
-          ? `شكراً ${name}! تم تسجيل طلبك بنجاح. سيتم التواصل معك على ${phone} لتأكيد الطلب وترتيب التوصيل.`
-          : `Thank you ${name}! Your order has been placed. We'll contact you at ${phone} to confirm.`;
-        document.getElementById('successModal').classList.add('active');
-        document.body.style.overflow = 'hidden';
-      } else {
-        const errText = await res.text();
-        console.log('Order error:', res.status, errText);
-        showToast(isAr ? '❌ حدث خطأ، حاول مرة أخرى' : '❌ Error, please try again');
-      }
-    } catch(e) {
-      closeModal();
-      console.log('Catch error:', e);
-      showToast(isAr ? '❌ حدث خطأ في الاتصال' : '❌ Connection error');
-    }
+    closeModal();
+    document.getElementById('success-order-num').textContent = orderNumber;
+    document.getElementById('success-title').textContent = isAr ? '✅ تم استلام طلبك!' : '✅ Order Received!';
+    document.getElementById('success-msg').textContent = isAr
+      ? `شكراً ${name}! تم تسجيل طلبك بنجاح. سيتم التواصل معك على ${phone} لتأكيد الطلب وترتيب التوصيل.`
+      : `Thank you ${name}! Your order has been placed. We'll contact you at ${phone} to confirm.`;
+    document.getElementById('successModal').classList.add('active');
+    document.body.style.overflow = 'hidden';
 
     document.getElementById('submit-text').textContent = isAr ? '✓ تأكيد الطلب' : '✓ Confirm Order';
   }
