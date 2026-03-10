@@ -14,185 +14,200 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --gold: #c9a84c; --gold-light: #e2c97e; --gold-dark: #9a7a2e;
-    --bg: #080808; --bg2: #111111; --bg3: #1a1a1a;
-    --text: #f5f0e8; --gray: #888;
-    --border: rgba(201,168,76,0.15);
-    --nav-bg: rgba(8,8,8,0.95);
-    --card-bg: #1a1a1a; --modal-bg: #111111;
+    --gold:#c9a84c;--gold-light:#e2c97e;--gold-dark:#9a7a2e;
+    --bg:#080808;--bg2:#111111;--bg3:#1a1a1a;
+    --text:#f5f0e8;--gray:#888;
+    --border:rgba(201,168,76,0.15);
+    --nav-bg:rgba(8,8,8,0.95);
+    --card-bg:#1a1a1a;--modal-bg:#111111;
   }
-  body.light {
-    --bg: #f5f0e8; --bg2: #ede8dc; --bg3: #e0dace;
-    --text: #1a1209; --gray: #666;
-    --border: rgba(201,168,76,0.3);
-    --nav-bg: rgba(245,240,232,0.97);
-    --card-bg: #ede8dc; --modal-bg: #f5f0e8;
+  body.light{--bg:#f5f0e8;--bg2:#ede8dc;--bg3:#e0dace;--text:#1a1209;--gray:#666;--border:rgba(201,168,76,0.3);--nav-bg:rgba(245,240,232,0.97);--card-bg:#ede8dc;--modal-bg:#f5f0e8;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--bg);color:var(--text);font-family:'Tajawal',sans-serif;overflow-x:hidden;transition:background .4s,color .4s;}
+  ::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:var(--gold);}
+
+  nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:18px 60px;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(to bottom,var(--nav-bg),transparent);backdrop-filter:blur(10px);transition:background .4s;}
+  .nav-links{display:flex;gap:30px;list-style:none;align-items:center;}
+  .nav-links a{color:var(--text);text-decoration:none;font-size:14px;letter-spacing:2px;font-family:'Playfair Display',serif;transition:color .3s;position:relative;}
+  .nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;right:0;height:1px;background:var(--gold);transform:scaleX(0);transition:transform .3s;}
+  .nav-links a:hover{color:var(--gold);}
+  .nav-links a:hover::after{transform:scaleX(1);}
+  .nav-controls{display:flex;gap:8px;align-items:center;}
+  .toggle-btn{background:transparent;border:1px solid rgba(201,168,76,0.4);color:var(--text);padding:6px 12px;font-family:'Tajawal',sans-serif;font-size:13px;cursor:pointer;transition:all .3s;}
+  .toggle-btn:hover{background:rgba(201,168,76,0.1);color:var(--gold);border-color:var(--gold);}
+
+  .hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;position:relative;overflow:hidden;padding:120px 20px 80px;}
+  .hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 60% 50%,rgba(201,168,76,.08) 0%,transparent 70%),radial-gradient(ellipse at 20% 80%,rgba(201,168,76,.05) 0%,transparent 50%);}
+  body.light .hero-bg{background:radial-gradient(ellipse at 60% 50%,rgba(201,168,76,.12) 0%,transparent 70%);}
+  .hero-particles{position:absolute;inset:0;overflow:hidden;}
+  .particle{position:absolute;width:2px;height:2px;background:var(--gold);border-radius:50%;animation:float linear infinite;opacity:0;}
+  @keyframes float{0%{transform:translateY(100vh);opacity:0;}10%{opacity:1;}90%{opacity:1;}100%{transform:translateY(-100px) translateX(30px);opacity:0;}}
+  @keyframes logoGlow{0%,100%{filter:drop-shadow(0 0 20px rgba(201,168,76,.4));}50%{filter:drop-shadow(0 0 40px rgba(201,168,76,.8));}}
+  .hero-title{font-size:clamp(48px,8vw,100px);font-family:'Tajawal',sans-serif;font-weight:700;color:var(--text);line-height:1.2;margin-bottom:20px;animation:fadeUp 1s ease forwards;}
+  .hero-title span{background:linear-gradient(135deg,var(--gold-light),var(--gold),var(--gold-dark));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+  .hero-subtitle{font-size:clamp(16px,2.5vw,22px);color:var(--gray);letter-spacing:4px;margin-bottom:60px;animation:fadeUp 1s ease .2s forwards;opacity:0;}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(30px);}to{opacity:1;transform:translateY(0);}}
+  .hero-line{width:100px;height:1px;background:linear-gradient(to right,transparent,var(--gold),transparent);margin:0 auto 60px;animation:fadeUp 1s ease .4s forwards;opacity:0;}
+  .hero-cta{display:inline-block;padding:16px 50px;border:1px solid var(--gold);color:var(--gold);text-decoration:none;font-size:14px;letter-spacing:3px;font-family:'Playfair Display',serif;transition:all .4s;position:relative;overflow:hidden;animation:fadeUp 1s ease .6s forwards;opacity:0;}
+  .hero-cta::before{content:'';position:absolute;inset:0;background:var(--gold);transform:translateX(-101%);transition:transform .4s;}
+  .hero-cta:hover{color:var(--bg);}
+  .hero-cta:hover::before{transform:translateX(0);}
+  .hero-cta span{position:relative;z-index:1;}
+
+  .section-title{text-align:center;padding:80px 20px 40px;}
+  .section-title h2{font-size:clamp(32px,5vw,56px);font-family:'Tajawal',sans-serif;font-weight:700;color:var(--text);margin-bottom:15px;}
+  .section-title h2 span{background:linear-gradient(135deg,var(--gold-light),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+  .section-title p{color:var(--gray);font-size:16px;letter-spacing:2px;}
+  .gold-line{width:60px;height:2px;background:linear-gradient(to right,var(--gold-dark),var(--gold-light));margin:20px auto 0;}
+
+  /* FILTERS */
+  .filters-wrap{display:flex;gap:12px;justify-content:center;align-items:center;flex-wrap:wrap;padding:0 20px 40px;max-width:1000px;margin:0 auto;}
+  .filter-btn{padding:8px 22px;background:transparent;border:1px solid var(--border);color:var(--gray);font-family:'Tajawal',sans-serif;font-size:14px;cursor:pointer;transition:all .3s;letter-spacing:1px;}
+  .filter-btn.active{border-color:var(--gold);color:var(--gold);background:rgba(201,168,76,.08);}
+  .filter-btn:hover{border-color:var(--gold);color:var(--gold);}
+  .search-wrap{position:relative;flex:1;max-width:320px;}
+  .search-input{width:100%;padding:10px 16px 10px 40px;background:rgba(201,168,76,.05);border:1px solid var(--border);color:var(--text);font-family:'Tajawal',sans-serif;font-size:14px;outline:none;transition:border-color .3s;}
+  .search-input:focus{border-color:var(--gold);}
+  .search-input::placeholder{color:var(--gray);}
+  .search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--gray);font-size:16px;pointer-events:none;}
+
+  #products{padding:0 40px 100px;}
+  .products-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:30px;max-width:1400px;margin:0 auto;}
+  .product-card{background:var(--card-bg);border:1px solid var(--border);position:relative;overflow:hidden;cursor:pointer;transition:all .4s;}
+  .product-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(201,168,76,.05),transparent);opacity:0;transition:opacity .4s;}
+  .product-card:hover{border-color:rgba(201,168,76,.5);transform:translateY(-5px);box-shadow:0 20px 60px rgba(0,0,0,.2),0 0 30px rgba(201,168,76,.1);}
+  .product-card:hover::before{opacity:1;}
+  .product-img-wrap{position:relative;height:320px;overflow:hidden;background:var(--bg3);}
+  .product-img-wrap img{width:100%;height:100%;object-fit:cover;transition:transform .6s;}
+  .product-card:hover .product-img-wrap img{transform:scale(1.05);}
+  .product-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(8,8,8,.6),transparent);}
+  body.light .product-overlay{background:linear-gradient(to top,rgba(200,190,170,.3),transparent);}
+  .product-badge{position:absolute;top:15px;left:15px;background:rgba(201,168,76,.15);border:1px solid var(--gold);color:var(--gold);padding:4px 12px;font-size:11px;letter-spacing:2px;}
+  .product-category-tag{position:absolute;top:15px;right:15px;background:rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.2);color:#fff;padding:3px 10px;font-size:11px;letter-spacing:1px;}
+  .out-of-stock-overlay{position:absolute;inset:0;background:rgba(8,8,8,.75);display:flex;align-items:center;justify-content:center;}
+  .out-of-stock-text{color:var(--gray);font-size:18px;letter-spacing:3px;border:1px solid var(--gray);padding:8px 20px;}
+  .product-info{padding:24px;}
+  .product-name{font-size:22px;font-family:'Tajawal',sans-serif;font-weight:700;color:var(--text);margin-bottom:8px;}
+  .product-name-en{font-size:13px;color:var(--gold);letter-spacing:3px;font-family:'Playfair Display',serif;margin-bottom:12px;}
+  .product-desc{font-size:14px;color:var(--gray);line-height:1.7;margin-bottom:20px;}
+  .product-footer{display:flex;justify-content:space-between;align-items:center;padding-top:16px;border-top:1px solid var(--border);}
+  .product-price{font-size:24px;font-family:'Playfair Display',serif;color:var(--gold);font-weight:700;}
+  .product-price span{font-size:13px;color:var(--gray);font-family:'Tajawal',sans-serif;font-weight:400;}
+  .product-stock{font-size:12px;color:var(--gray);letter-spacing:1px;}
+  .product-stock.low{color:#c9844c;}
+  .product-stock.available{color:#4caf50;}
+  .order-btn{display:block;width:100%;padding:14px;margin-top:16px;background:transparent;border:1px solid var(--gold);color:var(--gold);font-family:'Tajawal',sans-serif;font-size:15px;font-weight:500;letter-spacing:2px;cursor:pointer;transition:all .3s;position:relative;overflow:hidden;}
+  .order-btn::before{content:'';position:absolute;inset:0;background:var(--gold);transform:translateY(101%);transition:transform .3s;}
+  .order-btn:hover{color:var(--bg);}
+  .order-btn:hover::before{transform:translateY(0);}
+  .order-btn span{position:relative;z-index:1;}
+  .order-btn:disabled{opacity:.4;cursor:not-allowed;border-color:var(--gray);color:var(--gray);}
+  .order-btn:disabled::before{display:none;}
+
+  /* MODAL */
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:2000;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(5px);}
+  .modal-overlay.active{display:flex;}
+  .modal{background:var(--modal-bg);border:1px solid rgba(201,168,76,.3);max-width:540px;width:100%;max-height:90vh;overflow-y:auto;animation:modalIn .3s ease;}
+  @keyframes modalIn{from{opacity:0;transform:translateY(30px) scale(.97);}to{opacity:1;transform:translateY(0) scale(1);}}
+  .modal-header{padding:30px 30px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:flex-start;}
+  .modal-title{font-size:26px;font-family:'Tajawal',sans-serif;font-weight:700;color:var(--text);}
+  .modal-subtitle{font-size:13px;color:var(--gold);letter-spacing:2px;margin-top:4px;}
+  .modal-close{background:none;border:none;color:var(--gray);font-size:24px;cursor:pointer;transition:color .3s;}
+  .modal-close:hover{color:var(--gold);}
+  .modal-body{padding:30px;}
+  .selected-product{display:flex;align-items:center;gap:16px;padding:16px;background:rgba(201,168,76,.05);border:1px solid var(--border);margin-bottom:30px;}
+  .selected-product img{width:70px;height:70px;object-fit:cover;}
+  .selected-product-name{font-size:18px;font-weight:700;color:var(--text);}
+  .selected-product-price{font-size:16px;color:var(--gold);margin-top:4px;}
+  .form-group{margin-bottom:20px;}
+  .form-label{display:block;font-size:13px;color:var(--gold);letter-spacing:2px;margin-bottom:8px;text-transform:uppercase;}
+  .form-input,.form-textarea{width:100%;padding:14px 16px;background:rgba(201,168,76,.05);border:1px solid var(--border);color:var(--text);font-family:'Tajawal',sans-serif;font-size:15px;transition:border-color .3s;outline:none;}
+  .form-input:focus,.form-textarea:focus{border-color:var(--gold);}
+  .form-textarea{resize:vertical;min-height:80px;}
+  .quantity-wrap{display:flex;align-items:center;border:1px solid var(--border);}
+  .qty-btn{width:44px;height:44px;background:rgba(201,168,76,.1);border:none;color:var(--gold);font-size:20px;cursor:pointer;transition:background .3s;}
+  .qty-btn:hover{background:rgba(201,168,76,.25);}
+  .qty-input{flex:1;height:44px;background:transparent;border:none;color:var(--text);font-size:18px;text-align:center;font-family:'Tajawal',sans-serif;outline:none;}
+  .submit-btn{width:100%;padding:16px;background:transparent;border:1px solid var(--gold);color:var(--gold);font-family:'Tajawal',sans-serif;font-size:17px;font-weight:700;letter-spacing:3px;cursor:pointer;transition:all .4s;position:relative;overflow:hidden;margin-top:10px;}
+  .submit-btn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--gold-dark),var(--gold),var(--gold-light));transform:translateX(-101%);transition:transform .4s;}
+  .submit-btn:hover{color:var(--bg);}
+  .submit-btn:hover::before{transform:translateX(0);}
+  .submit-btn span{position:relative;z-index:1;}
+
+  /* SUCCESS MODAL */
+  .success-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:3000;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(5px);}
+  .success-overlay.active{display:flex;}
+  .success-box{background:var(--modal-bg);border:1px solid rgba(76,175,80,.4);max-width:440px;width:100%;padding:50px 40px;text-align:center;animation:modalIn .3s ease;}
+  .success-icon{font-size:60px;margin-bottom:20px;}
+  .success-title{font-size:26px;font-family:'Tajawal',sans-serif;font-weight:700;color:var(--text);margin-bottom:10px;}
+  .success-order-num{font-size:20px;color:var(--gold);font-family:'Playfair Display',serif;letter-spacing:3px;margin:16px 0;padding:12px 20px;border:1px solid rgba(201,168,76,.3);display:inline-block;}
+  .success-msg{font-size:15px;color:var(--gray);line-height:1.8;margin-bottom:30px;}
+  .success-close{padding:14px 40px;background:transparent;border:1px solid var(--gold);color:var(--gold);font-family:'Tajawal',sans-serif;font-size:15px;cursor:pointer;transition:all .3s;position:relative;overflow:hidden;}
+  .success-close::before{content:'';position:absolute;inset:0;background:var(--gold);transform:translateY(101%);transition:transform .3s;}
+  .success-close:hover{color:var(--bg);}
+  .success-close:hover::before{transform:translateY(0);}
+  .success-close span{position:relative;z-index:1;}
+
+  /* ABOUT */
+  #about{padding:120px 60px 80px;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;max-width:1400px;margin:0 auto;scroll-margin-top:100px;}
+  .about-text h2{font-size:clamp(28px,3.5vw,44px);font-family:'Tajawal',sans-serif;font-weight:700;color:var(--text);margin-bottom:20px;line-height:2;-webkit-text-fill-color:var(--text);padding-top:15px;overflow:visible;}
+  .about-text h2 span{background:linear-gradient(135deg,var(--gold-light),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;display:inline-block;padding-top:6px;}
+  .about-text p{font-size:16px;color:var(--gray);line-height:1.9;margin-bottom:15px;}
+  .about-visual{position:relative;height:400px;overflow:hidden;}
+  .about-box{position:absolute;border:1px solid rgba(201,168,76,.3);}
+  .about-box-1{inset:0;background:rgba(201,168,76,.03);}
+  .about-box-2{top:10px;right:10px;bottom:10px;left:10px;border-color:rgba(201,168,76,.1);}
+  .about-content{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:20px;padding:20px;}
+  .about-stat{text-align:center;}
+  .about-stat-num{font-size:46px;font-family:'Playfair Display',serif;color:var(--gold);line-height:1;}
+  .about-stat-label{font-size:13px;color:var(--gray);letter-spacing:2px;margin-top:8px;}
+  .about-divider{width:1px;height:30px;background:rgba(201,168,76,.3);}
+
+  footer{padding:60px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px;}
+  .footer-social{display:flex;gap:20px;}
+  .social-link{width:40px;height:40px;border:1px solid rgba(201,168,76,.3);display:flex;align-items:center;justify-content:center;color:var(--gray);text-decoration:none;transition:all .3s;}
+  .social-link:hover{border-color:var(--gold);color:var(--gold);}
+  .footer-copy{font-size:12px;color:var(--gray);letter-spacing:2px;}
+
+  #loading{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .5s;}
+  .loader-bar{width:200px;height:1px;background:rgba(201,168,76,.2);position:relative;overflow:hidden;}
+  .loader-bar::after{content:'';position:absolute;left:-100%;top:0;height:100%;width:100%;background:linear-gradient(to right,transparent,var(--gold),transparent);animation:loading 1.5s ease infinite;}
+  @keyframes loading{to{left:100%;}}
+
+  .empty-state{text-align:center;padding:80px 20px;grid-column:1/-1;}
+  .empty-state p{color:var(--gray);font-size:18px;letter-spacing:2px;}
+
+  .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--bg3);border:1px solid var(--gold);color:var(--text);padding:16px 30px;font-size:15px;z-index:9999;transition:transform .4s;text-align:center;min-width:300px;}
+  .toast.show{transform:translateX(-50%) translateY(0);}
+
+  .img-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:var(--bg3);flex-direction:column;gap:10px;}
+  .img-placeholder span{color:var(--gray);font-size:13px;letter-spacing:4px;}
+
+  @media(max-width:768px){
+    nav{padding:15px 20px;}
+    .nav-links{gap:15px;}
+    #about{grid-template-columns:1fr;padding:100px 20px 60px;gap:40px;}
+    .about-visual{height:250px;}
+    #products{padding:0 20px 60px;}
+    footer{flex-direction:column;gap:20px;text-align:center;padding:40px 20px;}
+    .products-grid{grid-template-columns:repeat(auto-fill,minmax(260px,1fr));}
+    .filters-wrap{gap:8px;}
   }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
-  body { background: var(--bg); color: var(--text); font-family: 'Tajawal', sans-serif; overflow-x: hidden; transition: background 0.4s, color 0.4s; }
-  ::-webkit-scrollbar { width: 4px; }
-  ::-webkit-scrollbar-track { background: var(--bg); }
-  ::-webkit-scrollbar-thumb { background: var(--gold); }
-
-  nav {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
-    padding: 20px 60px;
-    display: flex; justify-content: space-between; align-items: center;
-    background: linear-gradient(to bottom, var(--nav-bg), transparent);
-    backdrop-filter: blur(10px); transition: background 0.4s;
-  }
-  .nav-links { display: flex; gap: 30px; list-style: none; align-items: center; }
-  .nav-links a { color: var(--text); text-decoration: none; font-size: 14px; letter-spacing: 2px; font-family: 'Playfair Display', serif; transition: color 0.3s; position: relative; }
-  .nav-links a::after { content: ''; position: absolute; bottom: -4px; left: 0; right: 0; height: 1px; background: var(--gold); transform: scaleX(0); transition: transform 0.3s; }
-  .nav-links a:hover { color: var(--gold); }
-  .nav-links a:hover::after { transform: scaleX(1); }
-  .nav-controls { display: flex; gap: 8px; align-items: center; }
-  .toggle-btn { background: transparent; border: 1px solid rgba(201,168,76,0.4); color: var(--text); padding: 6px 12px; font-family: 'Tajawal', sans-serif; font-size: 13px; cursor: pointer; transition: all 0.3s; }
-  .toggle-btn:hover { background: rgba(201,168,76,0.1); color: var(--gold); border-color: var(--gold); }
-
-  .hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; position: relative; overflow: hidden; padding: 120px 20px 80px; }
-  .hero-bg { position: absolute; inset: 0; background: radial-gradient(ellipse at 60% 50%, rgba(201,168,76,0.08) 0%, transparent 70%), radial-gradient(ellipse at 20% 80%, rgba(201,168,76,0.05) 0%, transparent 50%); }
-  body.light .hero-bg { background: radial-gradient(ellipse at 60% 50%, rgba(201,168,76,0.12) 0%, transparent 70%); }
-  .hero-particles { position: absolute; inset: 0; overflow: hidden; }
-  .particle { position: absolute; width: 2px; height: 2px; background: var(--gold); border-radius: 50%; animation: float linear infinite; opacity: 0; }
-  @keyframes float { 0% { transform: translateY(100vh); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(-100px) translateX(30px); opacity: 0; } }
-  @keyframes logoGlow { 0%, 100% { filter: drop-shadow(0 0 20px rgba(201,168,76,0.4)); } 50% { filter: drop-shadow(0 0 40px rgba(201,168,76,0.8)); } }
-  .hero-title { font-size: clamp(48px, 8vw, 100px); font-family: 'Tajawal', sans-serif; font-weight: 700; color: var(--text); line-height: 1.2; margin-bottom: 20px; animation: fadeUp 1s ease forwards; }
-  .hero-title span { background: linear-gradient(135deg, var(--gold-light), var(--gold), var(--gold-dark)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-  .hero-subtitle { font-size: clamp(16px, 2.5vw, 22px); color: var(--gray); letter-spacing: 4px; margin-bottom: 60px; animation: fadeUp 1s ease 0.2s forwards; opacity: 0; }
-  @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-  .hero-line { width: 100px; height: 1px; background: linear-gradient(to right, transparent, var(--gold), transparent); margin: 0 auto 60px; animation: fadeUp 1s ease 0.4s forwards; opacity: 0; }
-  .hero-cta { display: inline-block; padding: 16px 50px; border: 1px solid var(--gold); color: var(--gold); text-decoration: none; font-size: 14px; letter-spacing: 3px; font-family: 'Playfair Display', serif; transition: all 0.4s; position: relative; overflow: hidden; animation: fadeUp 1s ease 0.6s forwards; opacity: 0; }
-  .hero-cta::before { content: ''; position: absolute; inset: 0; background: var(--gold); transform: translateX(-101%); transition: transform 0.4s; }
-  .hero-cta:hover { color: var(--bg); }
-  .hero-cta:hover::before { transform: translateX(0); }
-  .hero-cta span { position: relative; z-index: 1; }
-
-  .section-title { text-align: center; padding: 80px 20px 60px; }
-  .section-title h2 { font-size: clamp(32px, 5vw, 56px); font-family: 'Tajawal', sans-serif; font-weight: 700; color: var(--text); margin-bottom: 15px; }
-  .section-title h2 span { background: linear-gradient(135deg, var(--gold-light), var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-  .section-title p { color: var(--gray); font-size: 16px; letter-spacing: 2px; }
-  .gold-line { width: 60px; height: 2px; background: linear-gradient(to right, var(--gold-dark), var(--gold-light)); margin: 20px auto 0; }
-
-  #products { padding: 0 40px 100px; }
-  .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; max-width: 1400px; margin: 0 auto; }
-  .product-card { background: var(--card-bg); border: 1px solid var(--border); position: relative; overflow: hidden; cursor: pointer; transition: all 0.4s; }
-  .product-card::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(201,168,76,0.05), transparent); opacity: 0; transition: opacity 0.4s; }
-  .product-card:hover { border-color: rgba(201,168,76,0.5); transform: translateY(-5px); box-shadow: 0 20px 60px rgba(0,0,0,0.2), 0 0 30px rgba(201,168,76,0.1); }
-  .product-card:hover::before { opacity: 1; }
-  .product-img-wrap { position: relative; height: 320px; overflow: hidden; background: var(--bg3); }
-  .product-img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s; }
-  .product-card:hover .product-img-wrap img { transform: scale(1.05); }
-  .product-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(8,8,8,0.6), transparent); }
-  body.light .product-overlay { background: linear-gradient(to top, rgba(200,190,170,0.3), transparent); }
-  .product-badge { position: absolute; top: 15px; left: 15px; background: rgba(201,168,76,0.15); border: 1px solid var(--gold); color: var(--gold); padding: 4px 12px; font-size: 11px; letter-spacing: 2px; }
-  .out-of-stock-overlay { position: absolute; inset: 0; background: rgba(8,8,8,0.75); display: flex; align-items: center; justify-content: center; }
-  .out-of-stock-text { color: var(--gray); font-size: 18px; letter-spacing: 3px; border: 1px solid var(--gray); padding: 8px 20px; }
-  .product-info { padding: 24px; }
-  .product-name { font-size: 22px; font-family: 'Tajawal', sans-serif; font-weight: 700; color: var(--text); margin-bottom: 8px; }
-  .product-name-en { font-size: 13px; color: var(--gold); letter-spacing: 3px; font-family: 'Playfair Display', serif; margin-bottom: 12px; }
-  .product-desc { font-size: 14px; color: var(--gray); line-height: 1.7; margin-bottom: 20px; }
-  .product-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 16px; border-top: 1px solid var(--border); }
-  .product-price { font-size: 24px; font-family: 'Playfair Display', serif; color: var(--gold); font-weight: 700; }
-  .product-price span { font-size: 13px; color: var(--gray); font-family: 'Tajawal', sans-serif; font-weight: 400; }
-  .product-stock { font-size: 12px; color: var(--gray); letter-spacing: 1px; }
-  .product-stock.low { color: #c9844c; }
-  .product-stock.available { color: #4caf50; }
-  .order-btn { display: block; width: 100%; padding: 14px; margin-top: 16px; background: transparent; border: 1px solid var(--gold); color: var(--gold); font-family: 'Tajawal', sans-serif; font-size: 15px; font-weight: 500; letter-spacing: 2px; cursor: pointer; transition: all 0.3s; position: relative; overflow: hidden; }
-  .order-btn::before { content: ''; position: absolute; inset: 0; background: var(--gold); transform: translateY(101%); transition: transform 0.3s; }
-  .order-btn:hover { color: var(--bg); }
-  .order-btn:hover::before { transform: translateY(0); }
-  .order-btn span { position: relative; z-index: 1; }
-  .order-btn:disabled { opacity: 0.4; cursor: not-allowed; border-color: var(--gray); color: var(--gray); }
-  .order-btn:disabled::before { display: none; }
-
-  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(5px); }
-  .modal-overlay.active { display: flex; }
-  .modal { background: var(--modal-bg); border: 1px solid rgba(201,168,76,0.3); max-width: 540px; width: 100%; max-height: 90vh; overflow-y: auto; animation: modalIn 0.3s ease; }
-  @keyframes modalIn { from { opacity: 0; transform: translateY(30px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
-  .modal-header { padding: 30px 30px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: flex-start; }
-  .modal-title { font-size: 26px; font-family: 'Tajawal', sans-serif; font-weight: 700; color: var(--text); }
-  .modal-subtitle { font-size: 13px; color: var(--gold); letter-spacing: 2px; margin-top: 4px; }
-  .modal-close { background: none; border: none; color: var(--gray); font-size: 24px; cursor: pointer; transition: color 0.3s; }
-  .modal-close:hover { color: var(--gold); }
-  .modal-body { padding: 30px; }
-  .selected-product { display: flex; align-items: center; gap: 16px; padding: 16px; background: rgba(201,168,76,0.05); border: 1px solid var(--border); margin-bottom: 30px; }
-  .selected-product img { width: 70px; height: 70px; object-fit: cover; }
-  .selected-product-name { font-size: 18px; font-weight: 700; color: var(--text); }
-  .selected-product-price { font-size: 16px; color: var(--gold); margin-top: 4px; }
-  .form-group { margin-bottom: 20px; }
-  .form-label { display: block; font-size: 13px; color: var(--gold); letter-spacing: 2px; margin-bottom: 8px; text-transform: uppercase; }
-  .form-input, .form-textarea { width: 100%; padding: 14px 16px; background: rgba(201,168,76,0.05); border: 1px solid var(--border); color: var(--text); font-family: 'Tajawal', sans-serif; font-size: 15px; transition: border-color 0.3s; outline: none; }
-  .form-input:focus, .form-textarea:focus { border-color: var(--gold); }
-  .form-textarea { resize: vertical; min-height: 80px; }
-  .quantity-wrap { display: flex; align-items: center; border: 1px solid var(--border); }
-  .qty-btn { width: 44px; height: 44px; background: rgba(201,168,76,0.1); border: none; color: var(--gold); font-size: 20px; cursor: pointer; transition: background 0.3s; }
-  .qty-btn:hover { background: rgba(201,168,76,0.25); }
-  .qty-input { flex: 1; height: 44px; background: transparent; border: none; color: var(--text); font-size: 18px; text-align: center; font-family: 'Tajawal', sans-serif; outline: none; }
-  .submit-btn { width: 100%; padding: 16px; background: transparent; border: 1px solid var(--gold); color: var(--gold); font-family: 'Tajawal', sans-serif; font-size: 17px; font-weight: 700; letter-spacing: 3px; cursor: pointer; transition: all 0.4s; position: relative; overflow: hidden; margin-top: 10px; }
-  .submit-btn::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, var(--gold-dark), var(--gold), var(--gold-light)); transform: translateX(-101%); transition: transform 0.4s; }
-  .submit-btn:hover { color: var(--bg); }
-  .submit-btn:hover::before { transform: translateX(0); }
-  .submit-btn span { position: relative; z-index: 1; }
-
-  #about { padding: 120px 60px 80px; display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; max-width: 1400px; margin: 0 auto; scroll-margin-top: 100px; }
-  .about-text h2 { font-size: clamp(28px, 3.5vw, 44px); font-family: 'Tajawal', sans-serif; font-weight: 700; color: var(--text); margin-bottom: 20px; line-height: 2; -webkit-text-fill-color: var(--text); padding-top: 15px; overflow: visible; }
-  .about-text h2 span { background: linear-gradient(135deg, var(--gold-light), var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; display: inline-block; padding-top: 6px; }
-  .about-text p { font-size: 16px; color: var(--gray); line-height: 1.9; margin-bottom: 15px; }
-  .about-visual { position: relative; height: 400px; overflow: hidden; }
-  .about-box { position: absolute; border: 1px solid rgba(201,168,76,0.3); }
-  .about-box-1 { inset: 0; background: rgba(201,168,76,0.03); }
-  .about-box-2 { top: 10px; right: 10px; bottom: 10px; left: 10px; border-color: rgba(201,168,76,0.1); }
-  .about-content { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 20px; padding: 20px; }
-  .about-stat { text-align: center; }
-  .about-stat-num { font-size: 46px; font-family: 'Playfair Display', serif; color: var(--gold); line-height: 1; }
-  .about-stat-label { font-size: 13px; color: var(--gray); letter-spacing: 2px; margin-top: 8px; }
-  .about-divider { width: 1px; height: 30px; background: rgba(201,168,76,0.3); }
-
-  footer { padding: 60px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; }
-  .footer-social { display: flex; gap: 20px; }
-  .social-link { width: 40px; height: 40px; border: 1px solid rgba(201,168,76,0.3); display: flex; align-items: center; justify-content: center; color: var(--gray); text-decoration: none; transition: all 0.3s; }
-  .social-link:hover { border-color: var(--gold); color: var(--gold); }
-  .footer-copy { font-size: 12px; color: var(--gray); letter-spacing: 2px; }
-
-  #loading { position: fixed; inset: 0; background: var(--bg); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s; }
-  .loader-bar { width: 200px; height: 1px; background: rgba(201,168,76,0.2); position: relative; overflow: hidden; }
-  .loader-bar::after { content: ''; position: absolute; left: -100%; top: 0; height: 100%; width: 100%; background: linear-gradient(to right, transparent, var(--gold), transparent); animation: loading 1.5s ease infinite; }
-  @keyframes loading { to { left: 100%; } }
-
-  .empty-state { text-align: center; padding: 80px 20px; grid-column: 1 / -1; }
-  .empty-state p { color: var(--gray); font-size: 18px; letter-spacing: 2px; }
-
-  .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px); background: var(--bg3); border: 1px solid var(--gold); color: var(--text); padding: 16px 30px; font-size: 15px; z-index: 9999; transition: transform 0.4s; text-align: center; min-width: 300px; }
-  .toast.show { transform: translateX(-50%) translateY(0); }
-
-  .img-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: var(--bg3); flex-direction: column; gap: 10px; }
-  .img-placeholder span { color: var(--gray); font-size: 13px; letter-spacing: 4px; }
-
-  @media (max-width: 768px) {
-    nav { padding: 15px 20px; }
-    .nav-links { gap: 15px; }
-    #about { grid-template-columns: 1fr; padding: 100px 20px 60px; gap: 40px; }
-    .about-visual { height: 250px; }
-    #products { padding: 0 20px 60px; }
-    footer { flex-direction: column; gap: 20px; text-align: center; padding: 40px 20px; }
-    .products-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
-  }
-  @media (min-width: 768px) and (max-width: 1200px) {
-    #about { padding: 160px 40px 80px; gap: 40px; }
+  @media(min-width:768px) and (max-width:1200px){
+    #about{padding:160px 40px 80px;gap:40px;}
   }
 </style>
 </head>
 <body>
 
 <div id="loading">
-  <div style="font-family:'Playfair Display',serif; color:var(--gold); font-size:36px; letter-spacing:10px; margin-bottom:30px; animation:logoGlow 2s ease-in-out infinite;">ATHR</div>
+  <div style="font-family:'Playfair Display',serif;color:var(--gold);font-size:36px;letter-spacing:10px;margin-bottom:30px;animation:logoGlow 2s ease-in-out infinite;">ATHR</div>
   <div class="loader-bar"></div>
 </div>
 
 <nav>
-  <div style="font-family:'Playfair Display',serif; color:var(--gold); font-size:24px; letter-spacing:6px;">ATHR</div>
+  <div style="font-family:'Playfair Display',serif;color:var(--gold);font-size:24px;letter-spacing:6px;">ATHR</div>
   <ul class="nav-links">
     <li><a href="#products" data-ar="العطور" data-en="Perfumes">العطور</a></li>
     <li><a href="#about" data-ar="عن أثر" data-en="About">عن أثر</a></li>
@@ -206,7 +221,7 @@
 <section class="hero">
   <div class="hero-bg"></div>
   <div class="hero-particles" id="particles"></div>
-  <div style="font-family:'Playfair Display',serif; color:var(--gold); font-size:clamp(40px,6vw,80px); letter-spacing:10px; margin-bottom:20px; animation:logoGlow 3s ease-in-out infinite;">ATHR</div>
+  <div style="font-family:'Playfair Display',serif;color:var(--gold);font-size:clamp(40px,6vw,80px);letter-spacing:10px;margin-bottom:20px;animation:logoGlow 3s ease-in-out infinite;">ATHR</div>
   <h1 class="hero-title">مرحباً <span>بكم</span></h1>
   <p class="hero-subtitle" data-ar="حيث يبدأ الأثر" data-en="Where the scent begins">حيث يبدأ الأثر</p>
   <div class="hero-line"></div>
@@ -219,6 +234,19 @@
     <p id="products-sub" data-ar="كل عطر يحكي قصة" data-en="Every perfume tells a story">كل عطر يحكي قصة</p>
     <div class="gold-line"></div>
   </div>
+
+  <!-- FILTERS & SEARCH -->
+  <div class="filters-wrap">
+    <button class="filter-btn active" onclick="setFilter('all')" id="filter-all" data-ar="الكل" data-en="All">الكل</button>
+    <button class="filter-btn" onclick="setFilter('men')" id="filter-men" data-ar="رجالي" data-en="Men">رجالي</button>
+    <button class="filter-btn" onclick="setFilter('women')" id="filter-women" data-ar="نسائي" data-en="Women">نسائي</button>
+    <button class="filter-btn" onclick="setFilter('unisex')" id="filter-unisex" data-ar="مشترك" data-en="Unisex">مشترك</button>
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" class="search-input" id="searchInput" placeholder="ابحث عن عطر..." oninput="filterProducts()">
+    </div>
+  </div>
+
   <div class="products-grid" id="productsGrid">
     <div class="empty-state"><p>جارٍ تحميل العطور...</p></div>
   </div>
@@ -234,31 +262,22 @@
     <div class="about-box about-box-2"></div>
     <div class="about-box about-box-1"></div>
     <div class="about-content">
-      <div class="about-stat">
-        <div class="about-stat-num">∞</div>
-        <div class="about-stat-label" data-ar="أثر يبقى" data-en="Lasting Scent">أثر يبقى</div>
-      </div>
+      <div class="about-stat"><div class="about-stat-num">∞</div><div class="about-stat-label" data-ar="أثر يبقى" data-en="Lasting Scent">أثر يبقى</div></div>
       <div class="about-divider"></div>
-      <div class="about-stat">
-        <div class="about-stat-num" id="stat-products">0</div>
-        <div class="about-stat-label" data-ar="عطر فاخر" data-en="Luxury Perfumes">عطر فاخر</div>
-      </div>
+      <div class="about-stat"><div class="about-stat-num" id="stat-products">0</div><div class="about-stat-label" data-ar="عطر فاخر" data-en="Luxury Perfumes">عطر فاخر</div></div>
       <div class="about-divider"></div>
-      <div class="about-stat">
-        <div class="about-stat-num">🚚</div>
-        <div class="about-stat-label" data-ar="توصيل لباب بيتك" data-en="Door Delivery">توصيل لباب بيتك</div>
-      </div>
+      <div class="about-stat"><div class="about-stat-num">🚚</div><div class="about-stat-label" data-ar="توصيل لباب بيتك" data-en="Door Delivery">توصيل لباب بيتك</div></div>
     </div>
   </div>
 </section>
 
 <footer>
   <div>
-    <div style="font-family:'Playfair Display',serif; color:var(--gold); font-size:22px; letter-spacing:6px;">ATHR</div>
-    <div style="font-size:11px; color:var(--gray); letter-spacing:2px; margin-top:4px;" data-ar="أثر للعطور" data-en="ATHR Perfumes">أثر للعطور</div>
+    <div style="font-family:'Playfair Display',serif;color:var(--gold);font-size:22px;letter-spacing:6px;">ATHR</div>
+    <div style="font-size:11px;color:var(--gray);letter-spacing:2px;margin-top:4px;" data-ar="أثر للعطور" data-en="ATHR Perfumes">أثر للعطور</div>
   </div>
   <div class="footer-copy" data-ar="© 2025 ATHR. جميع الحقوق محفوظة" data-en="© 2025 ATHR. All rights reserved">© 2025 ATHR. جميع الحقوق محفوظة</div>
-  <div style="font-size:12px; color:var(--gray); letter-spacing:1px;">Developed by <a href="https://wa.me/201550036259" target="_blank" style="color:var(--gold); text-decoration:none;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">Moaz</a></div>
+  <div style="font-size:12px;color:var(--gray);letter-spacing:1px;">Developed by <a href="https://wa.me/201550036259" target="_blank" style="color:var(--gold);text-decoration:none;" onmouseover="this.style.opacity='.7'" onmouseout="this.style.opacity='1'">Moaz</a></div>
   <div class="footer-social">
     <!-- ضع رابط TikTok هنا بدل YOUR_TIKTOK_LINK -->
     <a href="YOUR_TIKTOK_LINK" target="_blank" class="social-link" title="TikTok">
@@ -307,8 +326,19 @@
           <button class="qty-btn" onclick="changeQty(1)">+</button>
         </div>
       </div>
-      <button class="submit-btn" onclick="submitOrder()"><span id="submit-text">📱 أرسل الطلب عبر واتساب</span></button>
+      <button class="submit-btn" onclick="submitOrder()"><span id="submit-text">✓ تأكيد الطلب</span></button>
     </div>
+  </div>
+</div>
+
+<!-- SUCCESS MODAL -->
+<div class="success-overlay" id="successModal">
+  <div class="success-box">
+    <div class="success-icon">🎉</div>
+    <div class="success-title" id="success-title">تم استلام طلبك!</div>
+    <div class="success-order-num" id="success-order-num"></div>
+    <div class="success-msg" id="success-msg">شكراً لك! سيتم التواصل معك قريباً لتأكيد الطلب وترتيب التوصيل.</div>
+    <button class="success-close" onclick="closeSuccess()"><span data-ar="حسناً" data-en="OK">حسناً</span></button>
   </div>
 </div>
 
@@ -317,18 +347,17 @@
 <script>
   const SUPABASE_URL = 'https://ubkjrqeencijfxtpitvm.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_HBhjrI4K478Qid8f5XnEzQ_jmBNPkTc';
-  let WHATSAPP_NUMBER = '20XXXXXXXXXX';
   let currentLang = localStorage.getItem('athr_lang') || 'ar';
   let currentProduct = null;
   let productsData = [];
+  let currentFilter = 'all';
 
   const api = (path, options = {}) =>
     fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
-      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json', ...options.headers },
+      headers: {'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json', ...options.headers},
       ...options
     });
 
-  // THEME
   function toggleTheme() {
     document.body.classList.toggle('light');
     const isLight = document.body.classList.contains('light');
@@ -336,36 +365,21 @@
     localStorage.setItem('athr_theme', isLight ? 'light' : 'dark');
   }
 
-  // LANGUAGE
   function applyLang() {
     const isAr = currentLang === 'ar';
     document.documentElement.lang = currentLang;
     document.documentElement.dir = isAr ? 'rtl' : 'ltr';
     document.getElementById('langBtn').textContent = isAr ? 'EN' : 'ع';
-
-    // Update all data-ar/data-en elements
-    document.querySelectorAll('[data-ar]').forEach(el => {
-      el.innerHTML = isAr ? el.getAttribute('data-ar') : el.getAttribute('data-en');
-    });
-
-    // Hero title
+    document.querySelectorAll('[data-ar]').forEach(el => { el.innerHTML = isAr ? el.getAttribute('data-ar') : el.getAttribute('data-en'); });
     document.querySelector('.hero-title').innerHTML = isAr ? 'مرحباً <span>بكم</span>' : 'Welcome to <span>ATHR</span>';
-
-    // Products section title
     document.getElementById('products-title').innerHTML = isAr ? 'مجموعة <span>العطور</span>' : 'Our <span>Collection</span>';
-
-    // About title
     document.getElementById('about-title').innerHTML = isAr ? 'لماذا <span>أثر</span>؟' : 'Why <span>ATHR</span>?';
-
-    // Modal
     document.getElementById('modal-title').textContent = isAr ? 'طلب العطر' : 'Order Perfume';
-    document.getElementById('submit-text').textContent = isAr ? '📱 أرسل الطلب عبر واتساب' : '📱 Send via WhatsApp';
-
-    // Placeholders
+    document.getElementById('submit-text').textContent = isAr ? '✓ تأكيد الطلب' : '✓ Confirm Order';
     document.getElementById('orderName').placeholder = isAr ? 'ادخل اسمك الكامل' : 'Enter your full name';
     document.getElementById('orderPhone').placeholder = isAr ? 'رقم التليفون' : 'Phone number';
     document.getElementById('orderAddress').placeholder = isAr ? 'العنوان كامل...' : 'Full address...';
-
+    document.getElementById('searchInput').placeholder = isAr ? 'ابحث عن عطر...' : 'Search perfumes...';
     renderProducts();
   }
 
@@ -375,21 +389,36 @@
     applyLang();
   }
 
-  // PRODUCTS
-  function renderProducts() {
+  function setFilter(f) {
+    currentFilter = f;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('filter-' + f).classList.add('active');
+    filterProducts();
+  }
+
+  function filterProducts() {
     const isAr = currentLang === 'ar';
+    const search = document.getElementById('searchInput').value.trim().toLowerCase();
     const grid = document.getElementById('productsGrid');
-    if (!productsData.length) {
-      grid.innerHTML = `<div class="empty-state"><p>${isAr ? 'لا توجد عطور متاحة حالياً' : 'No perfumes available'}</p></div>`;
+    let filtered = productsData;
+    if (currentFilter !== 'all') filtered = filtered.filter(p => p.category === currentFilter);
+    if (search) filtered = filtered.filter(p =>
+      p.name.toLowerCase().includes(search) ||
+      (p.name_en && p.name_en.toLowerCase().includes(search)) ||
+      (p.description && p.description.toLowerCase().includes(search))
+    );
+    if (!filtered.length) {
+      grid.innerHTML = `<div class="empty-state"><p>${isAr ? 'لا توجد عطور مطابقة' : 'No perfumes found'}</p></div>`;
       return;
     }
-    document.getElementById('stat-products').textContent = productsData.length;
-    grid.innerHTML = productsData.map(p => `
+    const catLabels = { men: isAr ? 'رجالي' : 'Men', women: isAr ? 'نسائي' : 'Women', unisex: isAr ? 'مشترك' : 'Unisex' };
+    grid.innerHTML = filtered.map(p => `
       <div class="product-card">
         <div class="product-img-wrap">
           ${p.image ? `<img src="${p.image}" alt="${p.name}" loading="lazy">` : `<div class="img-placeholder"><svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="1" opacity="0.3"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>ATHR</span></div>`}
           <div class="product-overlay"></div>
           ${p.badge ? `<div class="product-badge">${p.badge}</div>` : ''}
+          ${p.category && p.category !== 'unisex' ? `<div class="product-category-tag">${catLabels[p.category] || p.category}</div>` : ''}
           ${p.stock <= 0 ? `<div class="out-of-stock-overlay"><div class="out-of-stock-text">${isAr ? 'نفذت الكمية' : 'Out of Stock'}</div></div>` : ''}
         </div>
         <div class="product-info">
@@ -399,7 +428,7 @@
           <div class="product-footer">
             <div class="product-price">${p.price} <span>${isAr ? 'جنيه' : 'EGP'}</span></div>
             <div class="product-stock ${p.stock > 5 ? 'available' : p.stock > 0 ? 'low' : ''}">
-              ${p.stock > 5 ? (isAr ? '✓ متوفر' : '✓ In Stock') : p.stock > 0 ? (isAr ? `⚠ متبقي ${p.stock} فقط` : `⚠ Only ${p.stock} left`) : (isAr ? '✗ نفذ' : '✗ Sold Out')}
+              ${p.stock > 5 ? (isAr ? '✓ متوفر' : '✓ In Stock') : p.stock > 0 ? (isAr ? `⚠ متبقي ${p.stock}` : `⚠ Only ${p.stock} left`) : (isAr ? '✗ نفذ' : '✗ Sold Out')}
             </div>
           </div>
           <button class="order-btn" onclick='openOrder(${JSON.stringify(p).replace(/'/g, "&#39;")})' ${p.stock <= 0 ? 'disabled' : ''}>
@@ -410,14 +439,15 @@
     `).join('');
   }
 
+  function renderProducts() { filterProducts(); }
+
   async function loadProducts() {
     try {
-      const settRes = await api('settings?select=value&key=eq.whatsapp');
-      if (settRes.ok) { const s = await settRes.json(); if (s.length > 0) WHATSAPP_NUMBER = s[0].value; }
       const res = await api('products?select=*&visible=eq.true&order=created_at.desc');
       productsData = await res.json();
       document.getElementById('loading').style.opacity = '0';
       setTimeout(() => document.getElementById('loading').style.display = 'none', 500);
+      document.getElementById('stat-products').textContent = productsData.length;
       renderProducts();
     } catch(e) {
       document.getElementById('loading').style.opacity = '0';
@@ -425,7 +455,6 @@
     }
   }
 
-  // PARTICLES
   function createParticles() {
     const c = document.getElementById('particles');
     for (let i = 0; i < 20; i++) {
@@ -446,11 +475,16 @@
         <div class="selected-product-price">${product.price} ${isAr ? 'جنيه' : 'EGP'}</div>
       </div>`;
     document.getElementById('orderQty').value = 1;
+    document.getElementById('orderName').value = '';
+    document.getElementById('orderPhone').value = '';
+    document.getElementById('orderAddress').value = '';
     document.getElementById('orderModal').classList.add('active');
     document.body.style.overflow = 'hidden';
   }
 
   function closeModal() { document.getElementById('orderModal').classList.remove('active'); document.body.style.overflow = ''; }
+
+  function closeSuccess() { document.getElementById('successModal').classList.remove('active'); document.body.style.overflow = ''; }
 
   function changeQty(delta) {
     const input = document.getElementById('orderQty');
@@ -467,17 +501,17 @@
     const isAr = currentLang === 'ar';
     if (!name || !phone || !address) { showToast(isAr ? 'من فضلك اكمل جميع البيانات' : 'Please fill all fields'); return; }
     const total = currentProduct.price * qty;
-    const productName = currentProduct.name;
     const orderNumber = 'ATHR-' + Date.now().toString().slice(-6);
+    document.getElementById('submit-text').textContent = isAr ? '⏳ جارٍ الإرسال...' : '⏳ Sending...';
 
     try {
-      await api('orders', {
+      const res = await api('orders', {
         method: 'POST',
-        headers: { 'Prefer': 'return=minimal' },
+        headers: {'Prefer': 'return=minimal'},
         body: JSON.stringify({
           order_number: orderNumber,
           product_id: currentProduct.id,
-          product_name: productName,
+          product_name: currentProduct.name,
           product_price: currentProduct.price,
           quantity: qty,
           total: total,
@@ -487,12 +521,26 @@
           status: 'new'
         })
       });
-    } catch(e) { console.log('order save error', e); }
 
-    const msg = `🌟 *طلب جديد - ATHR أثر*\n\n🔢 *رقم الطلب:* ${orderNumber}\n👤 *الاسم:* ${name}\n📱 *الهاتف:* ${phone}\n📍 *العنوان:* ${address}\n\n🧴 *العطر:* ${productName}\n🔢 *الكمية:* ${qty}\n💰 *الإجمالي:* ${total} جنيه\n\n_ATHR Perfumes_`;
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
-    closeModal();
-    showToast(isAr ? `✓ تم إرسال طلبك! رقم طلبك: ${orderNumber}` : `✓ Order sent! Your order: ${orderNumber}`);
+      closeModal();
+
+      if (res.ok) {
+        document.getElementById('success-order-num').textContent = orderNumber;
+        document.getElementById('success-title').textContent = isAr ? '✅ تم استلام طلبك!' : '✅ Order Received!';
+        document.getElementById('success-msg').textContent = isAr
+          ? `شكراً ${name}! تم تسجيل طلبك بنجاح. سيتم التواصل معك على ${phone} لتأكيد الطلب وترتيب التوصيل.`
+          : `Thank you ${name}! Your order has been placed. We'll contact you at ${phone} to confirm.`;
+        document.getElementById('successModal').classList.add('active');
+        document.body.style.overflow = 'hidden';
+      } else {
+        showToast(isAr ? '❌ حدث خطأ، حاول مرة أخرى' : '❌ Error, please try again');
+      }
+    } catch(e) {
+      closeModal();
+      showToast(isAr ? '❌ حدث خطأ في الاتصال' : '❌ Connection error');
+    }
+
+    document.getElementById('submit-text').textContent = isAr ? '✓ تأكيد الطلب' : '✓ Confirm Order';
   }
 
   function showToast(msg) {
@@ -503,9 +551,9 @@
   }
 
   document.getElementById('orderModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
+  document.getElementById('successModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeSuccess(); });
   setTimeout(() => { document.getElementById('loading').style.opacity = '0'; setTimeout(() => document.getElementById('loading').style.display = 'none', 500); }, 4000);
 
-  // Init
   if (localStorage.getItem('athr_theme') === 'light') { document.body.classList.add('light'); document.getElementById('themeBtn').textContent = '🌙'; }
   applyLang();
   createParticles();
