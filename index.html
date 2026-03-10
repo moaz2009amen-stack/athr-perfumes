@@ -319,6 +319,12 @@
         <textarea class="form-textarea" id="orderAddress" placeholder="العنوان كامل..."></textarea>
       </div>
       <div class="form-group">
+        <button type="button" onclick="getLocation()" id="locationBtn" style="width:100%;padding:12px;background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.4);color:var(--gold);font-family:'Tajawal',sans-serif;font-size:14px;cursor:pointer;transition:all .3s;letter-spacing:1px;" onmouseover="this.style.background='rgba(201,168,76,0.15)'" onmouseout="this.style.background='rgba(201,168,76,0.08)'">
+          📍 <span id="locationBtnText" data-ar="إرسال موقعي الحالي" data-en="Send My Location">إرسال موقعي الحالي</span>
+        </button>
+        <div id="locationStatus" style="font-size:12px;color:var(--gray);margin-top:6px;text-align:center;display:none;"></div>
+      </div>
+      <div class="form-group">
         <label class="form-label" data-ar="الكمية" data-en="Quantity">الكمية</label>
         <div class="quantity-wrap">
           <button class="qty-btn" onclick="changeQty(-1)">−</button>
@@ -510,7 +516,6 @@
         headers: {'Prefer': 'return=minimal'},
         body: JSON.stringify({
           order_number: orderNumber,
-          product_id: currentProduct.id,
           product_name: currentProduct.name,
           product_price: currentProduct.price,
           quantity: qty,
@@ -518,6 +523,7 @@
           customer_name: name,
           customer_phone: phone,
           customer_address: address,
+          location_link: document.getElementById('locationBtn').getAttribute('data-location') || null,
           status: 'new'
         })
       });
@@ -541,6 +547,44 @@
     }
 
     document.getElementById('submit-text').textContent = isAr ? '✓ تأكيد الطلب' : '✓ Confirm Order';
+  }
+
+  function getLocation() {
+    const isAr = currentLang === 'ar';
+    const btn = document.getElementById('locationBtn');
+    const status = document.getElementById('locationStatus');
+    if (!navigator.geolocation) {
+      status.style.display = 'block';
+      status.textContent = isAr ? '❌ المتصفح لا يدعم تحديد الموقع' : '❌ Browser does not support geolocation';
+      return;
+    }
+    document.getElementById('locationBtnText').textContent = isAr ? '⏳ جارٍ تحديد الموقع...' : '⏳ Getting location...';
+    btn.disabled = true;
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+        const link = `https://maps.google.com/?q=${lat},${lng}`;
+        const addressField = document.getElementById('orderAddress');
+        const currentVal = addressField.value.trim();
+        // Store location link separately
+        btn.setAttribute('data-location', link);
+        status.style.display = 'block';
+        status.style.color = '#4caf50';
+        status.innerHTML = isAr 
+          ? `✅ تم تحديد موقعك! <a href="${link}" target="_blank" style="color:var(--gold);">عرض على الخريطة</a>`
+          : `✅ Location captured! <a href="${link}" target="_blank" style="color:var(--gold);">View on map</a>`;
+        document.getElementById('locationBtnText').textContent = isAr ? '✅ تم تحديد الموقع' : '✅ Location Set';
+        btn.disabled = false;
+      },
+      (err) => {
+        status.style.display = 'block';
+        status.style.color = '#c94c4c';
+        status.textContent = isAr ? '❌ لم يتم السماح بالوصول للموقع' : '❌ Location access denied';
+        document.getElementById('locationBtnText').textContent = isAr ? 'إرسال موقعي الحالي' : 'Send My Location';
+        btn.disabled = false;
+      }
+    );
   }
 
   function showToast(msg) {
