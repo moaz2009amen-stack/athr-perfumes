@@ -402,6 +402,7 @@
         <label class="form-label">ملاحظة التتبع (اختياري)</label>
         <textarea class="form-textarea" id="detailTracking" placeholder="مثال: الطرد في الطريق..."></textarea>
         <button class="btn" style="margin-top:16px;" onclick="updateOrderStatus()"><span>💾 حفظ التغييرات</span></button>
+        <button id="notifyBtn" style="margin-top:12px;width:100%;padding:14px;background:rgba(37,211,102,0.1);border:1px solid rgba(37,211,102,0.4);color:#25d366;font-family:'Tajawal',sans-serif;font-size:15px;cursor:pointer;letter-spacing:1px;transition:all .3s;" onmouseover="this.style.background='rgba(37,211,102,0.2)'" onmouseout="this.style.background='rgba(37,211,102,0.1)'" onclick="notifyCustomer()">📱 إشعار العميل على واتساب</button>
       </div>
     </div>
   </div>
@@ -808,6 +809,34 @@
     }
   }
 
+  function notifyCustomer() {
+    const order = window.ordersCache ? window.ordersCache.find(o => o.id === currentOrderId) : null;
+    if (!order) return;
+    const statusAr = {
+      new: 'تم استلام طلبك ✅',
+      processing: 'طلبك قيد التجهيز 🟡',
+      shipped: 'طلبك في الطريق إليك 🚚',
+      delivered: 'تم تسليم طلبك بنجاح 🎉',
+      cancelled: 'تم إلغاء طلبك ❌'
+    };
+    const status = document.getElementById('detailStatus').value;
+    const tracking = document.getElementById('detailTracking').value.trim();
+    const msg = `مرحباً ${order.customer_name} 👋
+
+*ATHR أثر للعطور*
+
+تحديث طلبك رقم: *${order.order_number}*
+🧴 ${order.product_name}
+
+الحالة: *${statusAr[status] || status}*${tracking ? `
+📝 ${tracking}` : ''}
+
+شكراً لثقتك بنا 🌟`;
+    const phone = order.customer_phone.replace(/[^0-9]/g, '');
+    const fullPhone = phone.startsWith('0') ? '2' + phone : phone.startsWith('2') ? phone : '2' + phone;
+    window.open(`https://wa.me/${fullPhone}?text=${encodeURIComponent(msg)}`, '_blank');
+  }
+
   document.getElementById('orderDetailOverlay').addEventListener('click', e => { if (e.target === e.currentTarget) closeOrderDetail(); });
 
   // expose to HTML
@@ -828,6 +857,7 @@
   window.openOrderDetail = openOrderDetail;
   window.closeOrderDetail = closeOrderDetail;
   window.updateOrderStatus = updateOrderStatus;
+  window.notifyCustomer = notifyCustomer;
 </script>
 </body>
 </html>
