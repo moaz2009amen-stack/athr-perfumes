@@ -641,9 +641,21 @@
 
   async function loadOrders() {
     const tbody = document.getElementById('ordersTableBody');
+    if (!tbody) return;
     tbody.innerHTML = '<tr class="empty-row"><td colspan="7">جارٍ التحميل...</td></tr>';
-    const res = await api('orders?select=*&order=created_at.desc');
-    const orders = await res.json();
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/orders?select=*&order=created_at.desc`, {
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': `Bearer ${SUPABASE_KEY}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      const orders = await res.json();
+      if (!Array.isArray(orders)) {
+        tbody.innerHTML = '<tr class="empty-row"><td colspan="7">خطأ في تحميل الطلبات</td></tr>';
+        return;
+      }
 
     // Stats
     const counts = { new: 0, processing: 0, shipped: 0, delivered: 0 };
@@ -672,6 +684,9 @@
         <td><button class="action-btn edit" onclick="openOrderDetail(${JSON.stringify(o).replace(/'/g, "&#39;")})">التفاصيل</button></td>
       </tr>`;
     }).join('');
+    } catch(e) {
+      tbody.innerHTML = '<tr class="empty-row"><td colspan="7">خطأ في الاتصال</td></tr>';
+    }
   }
 
   function openOrderDetail(order) {
