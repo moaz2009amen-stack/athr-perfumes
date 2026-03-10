@@ -530,7 +530,7 @@
 
       closeModal();
 
-      if (res.ok) {
+      if (res.status === 201 || res.status === 200 || res.ok) {
         document.getElementById('success-order-num').textContent = orderNumber;
         document.getElementById('success-title').textContent = isAr ? '✅ تم استلام طلبك!' : '✅ Order Received!';
         document.getElementById('success-msg').textContent = isAr
@@ -539,10 +539,13 @@
         document.getElementById('successModal').classList.add('active');
         document.body.style.overflow = 'hidden';
       } else {
+        const errText = await res.text();
+        console.log('Order error:', res.status, errText);
         showToast(isAr ? '❌ حدث خطأ، حاول مرة أخرى' : '❌ Error, please try again');
       }
     } catch(e) {
       closeModal();
+      console.log('Catch error:', e);
       showToast(isAr ? '❌ حدث خطأ في الاتصال' : '❌ Connection error');
     }
 
