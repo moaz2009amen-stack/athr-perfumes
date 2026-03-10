@@ -459,19 +459,40 @@
     else if (delta < 0) input.value = Math.max(1, parseInt(input.value || 1) + delta);
   }
 
-  function submitOrder() {
+  async function submitOrder() {
     const name = document.getElementById('orderName').value.trim();
     const phone = document.getElementById('orderPhone').value.trim();
     const address = document.getElementById('orderAddress').value.trim();
-    const qty = document.getElementById('orderQty').value;
+    const qty = parseInt(document.getElementById('orderQty').value);
     const isAr = currentLang === 'ar';
     if (!name || !phone || !address) { showToast(isAr ? 'من فضلك اكمل جميع البيانات' : 'Please fill all fields'); return; }
     const total = currentProduct.price * qty;
-    const productName = isAr ? currentProduct.name : (currentProduct.name_en || currentProduct.name);
-    const msg = `🌟 *New Order - ATHR أثر*\n\n👤 *Name:* ${name}\n📱 *Phone:* ${phone}\n📍 *Address:* ${address}\n\n🧴 *Perfume:* ${productName}\n🔢 *Qty:* ${qty}\n💰 *Total:* ${total} ${isAr ? 'جنيه' : 'EGP'}\n\n_ATHR Perfumes_`;
+    const productName = currentProduct.name;
+    const orderNumber = 'ATHR-' + Date.now().toString().slice(-6);
+
+    try {
+      await api('orders', {
+        method: 'POST',
+        headers: { 'Prefer': 'return=minimal' },
+        body: JSON.stringify({
+          order_number: orderNumber,
+          product_id: currentProduct.id,
+          product_name: productName,
+          product_price: currentProduct.price,
+          quantity: qty,
+          total: total,
+          customer_name: name,
+          customer_phone: phone,
+          customer_address: address,
+          status: 'new'
+        })
+      });
+    } catch(e) { console.log('order save error', e); }
+
+    const msg = `🌟 *طلب جديد - ATHR أثر*\n\n🔢 *رقم الطلب:* ${orderNumber}\n👤 *الاسم:* ${name}\n📱 *الهاتف:* ${phone}\n📍 *العنوان:* ${address}\n\n🧴 *العطر:* ${productName}\n🔢 *الكمية:* ${qty}\n💰 *الإجمالي:* ${total} جنيه\n\n_ATHR Perfumes_`;
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
     closeModal();
-    showToast(isAr ? '✓ تم إرسال طلبك بنجاح!' : '✓ Order sent successfully!');
+    showToast(isAr ? `✓ تم إرسال طلبك! رقم طلبك: ${orderNumber}` : `✓ Order sent! Your order: ${orderNumber}`);
   }
 
   function showToast(msg) {
