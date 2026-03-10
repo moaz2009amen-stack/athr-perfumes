@@ -269,6 +269,14 @@
             <input type="text" class="form-input" id="pBadge" placeholder="مثال: جديد، الأكثر مبيعاً">
           </div>
           <div class="form-group">
+            <label class="form-label">التصنيف</label>
+            <select class="form-input" id="pCategory">
+              <option value="unisex">مشترك (Unisex)</option>
+              <option value="men">رجالي (Men)</option>
+              <option value="women">نسائي (Women)</option>
+            </select>
+          </div>
+          <div class="form-group">
             <label class="form-label">حالة العرض</label>
             <label class="checkbox-wrap">
               <input type="checkbox" id="pVisible" checked>
@@ -514,6 +522,7 @@
       image: document.getElementById('pImage').value.trim(),
       badge: document.getElementById('pBadge').value.trim(),
       visible: document.getElementById('pVisible').checked,
+      category: document.getElementById('pCategory').value,
     };
 
     try {
@@ -543,6 +552,7 @@
     document.getElementById('pImage').value = p.image || '';
     document.getElementById('pBadge').value = p.badge || '';
     document.getElementById('pVisible').checked = p.visible;
+    document.getElementById('pCategory').value = p.category || 'unisex';
     previewImg();
     document.getElementById('formTitle').textContent = '✏️ تعديل العطر';
     document.getElementById('cancelEditBtn').style.display = 'block';
@@ -583,6 +593,7 @@
   function clearForm() {
     ['editId','pName','pNameEn','pPrice','pStock','pDesc','pImage','pBadge'].forEach(id => document.getElementById(id).value = '');
     document.getElementById('pVisible').checked = true;
+    document.getElementById('pCategory').value = 'unisex';
     document.getElementById('imgPreview').style.display = 'none';
     document.getElementById('formTitle').textContent = '➕ إضافة عطر جديد';
     document.getElementById('cancelEditBtn').style.display = 'none';
