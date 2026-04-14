@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>حسابي — ATHR</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{
+  --gold:#c9a84c;--gold-light:#e2c97e;--gold-dark:#9a7a2e;
+  --bg:#080808;--bg2:#111;--bg3:#1a1a1a;--bg4:#222;
+  --text:#f0ebe0;--gray:#777;--border:rgba(201,168,76,.13);--border2:rgba(201,168,76,.28);
+  --red:#c94c4c;--green:#4caf50;
+}
+body.light{--bg:#f5f0e8;--bg2:#ede8dc;--bg3:#e4ddd2;--bg4:#d8d0c4;--text:#1a1209;--gray:#666;--border:rgba(201,168,76,.25);--border2:rgba(201,168,76,.45);}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Tajawal',sans-serif;min-height:100vh;}
+::-webkit-scrollbar{width:3px;}::-webkit-scrollbar-thumb{background:var(--gold-dark);}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+nav{
+  position:sticky;top:0;z-index:100;
+  background:var(--bg2);border-bottom:1px solid var(--border);
+  padding:16px 40px;display:flex;justify-content:space-between;align-items:center;
+}
+.nav-logo{font-family:'Playfair Display',serif;color:var(--gold);font-size:22px;letter-spacing:6px;text-decoration:none;}
+.nav-back{
+  padding:8px 18px;background:transparent;border:1px solid var(--border2);
+  color:var(--gold);font-family:'Tajawal',sans-serif;font-size:13px;
+  cursor:pointer;transition:all .3s;text-decoration:none;letter-spacing:1px;
+}
+.nav-back:hover{background:rgba(201,168,76,.08);}
+
+.page-hero{
+  padding:50px 40px 30px;text-align:center;
+  background:linear-gradient(to bottom, rgba(201,168,76,.04), transparent);
+  border-bottom:1px solid var(--border);
+}
+.user-big-avatar{
+  width:70px;height:70px;border-radius:50%;
+  border:2px solid var(--gold);background:rgba(201,168,76,.1);
+  color:var(--gold);font-size:28px;font-weight:700;
+  display:inline-flex;align-items:center;justify-content:center;
+  margin-bottom:14px;font-family:'Tajawal',sans-serif;
+}
+.user-name{font-size:22px;font-weight:700;color:var(--text);margin-bottom:4px;}
+.user-email{font-size:13px;color:var(--gray);}
+
+.container{max-width:900px;margin:0 auto;padding:30px 20px;}
+
+/* TABS */
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:28px;}
+.tab-btn{
+  padding:12px 24px;background:transparent;border:none;
+  color:var(--gray);font-family:'Tajawal',sans-serif;font-size:15px;
+  cursor:pointer;transition:all .3s;border-bottom:2px solid transparent;margin-bottom:-1px;
+}
+.tab-btn.active{color:var(--gold);border-bottom-color:var(--gold);}
+.tab-btn:hover:not(.active){color:var(--text);}
+.tab-count{
+  display:inline-flex;align-items:center;justify-content:center;
+  background:rgba(201,168,76,.15);color:var(--gold);
+  font-size:11px;width:20px;height:20px;border-radius:50%;margin-right:6px;
+}
+
+.tab-pane{display:none;}
+.tab-pane.active{display:block;animation:fadeUp .35s ease;}
+
+/* FORM */
+.panel{background:var(--bg2);border:1px solid var(--border);margin-bottom:20px;}
+.panel-header{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.panel-title{font-size:16px;font-weight:700;color:var(--text);}
+.panel-body{padding:22px;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.form-full{grid-column:1/-1;}
+.f-group{margin-bottom:16px;}
+.f-label{display:block;font-size:11px;color:var(--gold);letter-spacing:2px;margin-bottom:8px;text-transform:uppercase;}
+.f-input,.f-textarea{
+  width:100%;padding:13px 15px;
+  background:rgba(201,168,76,.04);border:1px solid var(--border2);
+  color:var(--text);font-family:'Tajawal',sans-serif;font-size:14px;
+  outline:none;transition:border-color .3s;
+}
+.f-input:focus,.f-textarea:focus{border-color:var(--gold);}
+.f-textarea{resize:vertical;min-height:70px;}
+.save-btn{
+  padding:13px 32px;background:transparent;border:1px solid var(--gold);
+  color:var(--gold);font-family:'Tajawal',sans-serif;font-size:15px;
+  font-weight:700;letter-spacing:2px;cursor:pointer;
+  transition:all .4s;position:relative;overflow:hidden;
+}
+.save-btn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--gold-dark),var(--gold));transform:translateX(-101%);transition:transform .4s;}
+.save-btn:hover{color:var(--bg);}
+.save-btn:hover::before{transform:translateX(0);}
+.save-btn span{position:relative;z-index:1;}
+
+/* ORDERS */
+.order-card{
+  background:var(--bg3);border:1px solid var(--border);
+  margin-bottom:14px;overflow:hidden;transition:border-color .3s;
+}
+.order-card:hover{border-color:var(--border2);}
+.order-card-head{
+  padding:16px 20px;display:flex;justify-content:space-between;align-items:center;
+  border-bottom:1px solid var(--border);cursor:pointer;
+}
+.order-num{font-family:'Playfair Display',serif;font-size:16px;color:var(--gold);letter-spacing:2px;}
+.order-date{font-size:12px;color:var(--gray);}
+.order-card-body{padding:16px 20px;}
+.order-detail-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px;}
+.order-detail-row:last-child{border-bottom:none;}
+.order-key{color:var(--gray);}
+.order-val{color:var(--text);font-weight:500;}
+.badge{padding:4px 11px;font-size:10px;letter-spacing:1px;border:1px solid;display:inline-block;}
+.badge-new{color:#4c9ccf;border-color:rgba(76,156,207,.35);background:rgba(76,156,207,.08);}
+.badge-processing{color:var(--gold);border-color:rgba(201,168,76,.35);background:rgba(201,168,76,.08);}
+.badge-shipped{color:#9c6ccf;border-color:rgba(156,108,207,.35);background:rgba(156,108,207,.08);}
+.badge-delivered{color:var(--green);border-color:rgba(76,175,80,.35);background:rgba(76,175,80,.08);}
+.badge-cancelled{color:var(--red);border-color:rgba(201,76,76,.35);background:rgba(201,76,76,.08);}
+.tracking-note{
+  margin-top:10px;padding:12px 14px;
+  background:rgba(201,168,76,.05);border-right:2px solid var(--gold);
+  font-size:13px;color:var(--gray);
+}
+
+/* CART */
+.cart-item{
+  display:flex;align-items:center;gap:14px;
+  padding:16px;background:var(--bg3);border:1px solid var(--border);
+  margin-bottom:12px;transition:border-color .3s;
+}
+.cart-item:hover{border-color:var(--border2);}
+.cart-thumb{width:70px;height:70px;object-fit:cover;border:1px solid var(--border2);flex-shrink:0;}
+.cart-thumb-empty{width:70px;height:70px;background:var(--bg4);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--gray);font-size:11px;flex-shrink:0;}
+.cart-info{flex:1;}
+.cart-name{font-size:16px;font-weight:700;color:var(--text);margin-bottom:4px;}
+.cart-name-en{font-size:11px;color:var(--gold);letter-spacing:2px;margin-bottom:8px;}
+.cart-price{font-size:18px;color:var(--gold);font-family:'Playfair Display',serif;}
+.cart-qty-wrap{display:flex;align-items:center;border:1px solid var(--border2);width:fit-content;margin-top:8px;}
+.cart-qty-btn{width:34px;height:34px;background:rgba(201,168,76,.08);border:none;color:var(--gold);font-size:18px;cursor:pointer;transition:background .3s;}
+.cart-qty-btn:hover{background:rgba(201,168,76,.2);}
+.cart-qty-num{width:42px;height:34px;background:transparent;border:none;color:var(--text);font-size:15px;text-align:center;font-family:'Tajawal',sans-serif;outline:none;}
+.cart-remove{background:transparent;border:none;color:var(--gray);font-size:20px;cursor:pointer;padding:8px;transition:color .3s;flex-shrink:0;}
+.cart-remove:hover{color:var(--red);}
+.cart-summary{
+  background:var(--bg3);border:1px solid var(--border2);
+  padding:22px;margin-top:20px;
+}
+.cart-sum-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);font-size:14px;}
+.cart-sum-row:last-child{border-bottom:none;font-size:18px;font-weight:700;}
+.cart-sum-row .sum-key{color:var(--gray);}
+.cart-sum-row .sum-val{color:var(--text);}
+.cart-sum-row .sum-val.gold{color:var(--gold);}
+.coupon-row{display:flex;gap:10px;margin:14px 0;}
+.coupon-input{flex:1;padding:12px 15px;background:rgba(201,168,76,.04);border:1px solid var(--border2);color:var(--text);font-family:'Tajawal',sans-serif;font-size:14px;outline:none;direction:ltr;text-align:center;text-transform:uppercase;letter-spacing:3px;}
+.coupon-input:focus{border-color:var(--gold);}
+.coupon-btn{padding:12px 20px;background:transparent;border:1px solid var(--border2);color:var(--gold);font-family:'Tajawal',sans-serif;font-size:13px;cursor:pointer;transition:all .3s;white-space:nowrap;}
+.coupon-btn:hover{background:rgba(201,168,76,.08);}
+.coupon-msg{font-size:12px;min-height:18px;margin-bottom:8px;text-align:center;}
+.coupon-msg.ok{color:var(--green);}
+.coupon-msg.err{color:var(--red);}
+.checkout-btn{
+  width:100%;padding:16px;margin-top:16px;
+  background:transparent;border:1px solid var(--gold);color:var(--gold);
+  font-family:'Tajawal',sans-serif;font-size:16px;font-weight:700;
+  letter-spacing:3px;cursor:pointer;transition:all .4s;
+  position:relative;overflow:hidden;
+}
+.checkout-btn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--gold-dark),var(--gold));transform:translateX(-101%);transition:transform .4s;}
+.checkout-btn:hover{color:var(--bg);}
+.checkout-btn:hover::before{transform:translateX(0);}
+.checkout-btn span{position:relative;z-index:1;}
+.checkout-btn:disabled{opacity:.4;cursor:not-allowed;}
+.checkout-btn:disabled::before{display:none;}
+
+.empty-state{text-align:center;padding:60px 20px;}
+.empty-state .empty-icon{font-size:50px;margin-bottom:16px;opacity:.5;}
+.empty-state p{color:var(--gray);font-size:16px;letter-spacing:1px;margin-bottom:20px;}
+.empty-state a{
+  display:inline-block;padding:12px 28px;
+  border:1px solid var(--gold);color:var(--gold);
+  text-decoration:none;font-size:14px;letter-spacing:2px;
+  transition:all .3s;
+}
+.empty-state a:hover{background:rgba(201,168,76,.1);}
+
+/* LOADING */
+.loading-spinner{display:flex;justify-content:center;padding:40px;}
+.spinner{width:32px;height:32px;border:2px solid var(--border2);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;}
+
+/* SUCCESS OVERLAY */
+.success-overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.88);z-index:2000;
+  align-items:center;justify-content:center;
+  padding:20px;backdrop-filter:blur(6px);
+}
+.success-overlay.open{display:flex;}
+.success-box{
+  background:var(--bg2);border:1px solid rgba(76,175,80,.4);
+  max-width:400px;width:100%;padding:44px 36px;text-align:center;
+  animation:fadeUp .3s ease;
+}
+
+.toast{
+  position:fixed;bottom:26px;left:50%;
+  transform:translateX(-50%) translateY(120px);
+  background:var(--bg3);border:1px solid var(--gold);
+  color:var(--text);padding:13px 26px;font-size:13px;
+  z-index:9999;transition:transform .35s;min-width:250px;text-align:center;
+}
+.toast.show{transform:translateX(-50%) translateY(0);}
+.toast.err{border-color:var(--red);}
+
+@media(max-width:680px){
+  nav{padding:14px 16px;}
+  .page-hero{padding:30px 16px 20px;}
+  .container{padding:20px 14px;}
+  .form-grid{grid-template-columns:1fr;}
+  .tabs{overflow-x:auto;}
+  .tab-btn{padding:10px 16px;font-size:14px;white-space:nowrap;}
+  .cart-item{flex-wrap:wrap;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">ATHR</a>
+  <a href="index.html" class="nav-back">← العودة للمتجر</a>
+</nav>
+
+<!-- HERO -->
+<div class="page-hero" id="pageHero">
+  <div class="user-big-avatar" id="bigAvatar">?</div>
+  <div class="user-name" id="heroName">جارٍ التحميل...</div>
+  <div class="user-email" id="heroEmail"></div>
+</div>
+
+<div class="container">
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('profile')" id="tab-profile">👤 بروفايلي</button>
+    <button class="tab-btn" onclick="switchTab('orders')" id="tab-orders">
+      🛒 مشترياتي <span class="tab-count" id="ordersCount">0</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('cart')" id="tab-cart">
+      🛍️ السلة <span class="tab-count" id="cartCount">0</span>
+    </button>
+  </div>
+
+  <!-- ── PROFILE TAB ── -->
+  <div class="tab-pane active" id="pane-profile">
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">المعلومات الشخصية</div>
+      </div>
+      <div class="panel-body">
+        <div class="form-grid">
+          <div class="f-group">
+            <label class="f-label">الاسم الكامل</label>
+            <input type="text" class="f-input" id="profName" placeholder="اسمك الكامل">
+          </div>
+          <div class="f-group">
+            <label class="f-label">رقم الهاتف الأساسي</label>
+            <input type="tel" class="f-input" id="profPhone" placeholder="01xxxxxxxxx">
+          </div>
+          <div class="f-group">
+            <label class="f-label">رقم هاتف بديل</label>
+            <input type="tel" class="f-input" id="profAltPhone" placeholder="اختياري">
+          </div>
+          <div class="f-group">
+            <label class="f-label">المدينة</label>
+            <input type="text" class="f-input" id="profCity" placeholder="القاهرة، الإسكندرية...">
+          </div>
+          <div class="f-group form-full">
+            <label class="f-label">العنوان التفصيلي</label>
+            <textarea class="f-textarea" id="profAddress" placeholder="الشارع، المنطقة، الحي..."></textarea>
+          </div>
+          <div class="f-group form-full">
+            <label class="f-label">ملاحظات للتوصيل</label>
+            <textarea class="f-textarea" id="profNotes" placeholder="أي تعليمات خاصة للمندوب..."></textarea>
+          </div>
+        </div>
+        <button class="save-btn" onclick="saveProfile()"><span id="saveProfTxt">💾 حفظ التغييرات</span></button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">🔑 تغيير كلمة المرور</div>
+      </div>
+      <div class="panel-body">
+        <div style="max-width:380px;">
+          <div class="f-group">
+            <label class="f-label">كلمة المرور الجديدة</label>
+            <input type="password" class="f-input" id="newPw" placeholder="8 أحرف على الأقل" style="direction:ltr;text-align:left;">
+          </div>
+          <div class="f-group">
+            <label class="f-label">تأكيد كلمة المرور</label>
+            <input type="password" class="f-input" id="confirmPw" placeholder="••••••••" style="direction:ltr;text-align:left;">
+          </div>
+          <button class="save-btn" onclick="changePassword()"><span>🔐 تغيير</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ORDERS TAB ── -->
+  <div class="tab-pane" id="pane-orders">
+    <div id="ordersContainer">
+      <div class="loading-spinner"><div class="spinner"></div></div>
+    </div>
+  </div>
+
+  <!-- ── CART TAB ── -->
+  <div class="tab-pane" id="pane-cart">
+    <div id="cartContainer"></div>
+  </div>
+
+</div><!-- end container -->
+
+<!-- SUCCESS OVERLAY -->
+<div class="success-overlay" id="successOverlay">
+  <div class="success-box">
+    <div style="font-size:54px;margin-bottom:16px;">🎉</div>
+    <div style="font-size:22px;font-weight:700;color:var(--text);margin-bottom:10px;">تم تأكيد طلبك!</div>
+    <div style="font-family:'Playfair Display',serif;font-size:20px;color:var(--gold);letter-spacing:3px;margin:16px 0;padding:12px 20px;border:1px solid rgba(201,168,76,.3);display:inline-block;" id="successOrderNum"></div>
+    <div style="font-size:14px;color:var(--gray);line-height:1.8;margin-bottom:28px;" id="successMsg"></div>
+    <button onclick="document.getElementById('successOverlay').classList.remove('open'); loadCart();" style="padding:13px 32px;background:transparent;border:1px solid var(--gold);color:var(--gold);font-family:'Tajawal',sans-serif;font-size:14px;cursor:pointer;letter-spacing:2px;">حسناً</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SUPABASE_URL = 'https://ubkjrqeencijfxtpitvm.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_HBhjrI4K478Qid8f5XnEzQ_jmBNPkTc';
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let currentUser = null;
+let cartData = [];
+let appliedCoupon = null;
+
+// ── INIT ──
+(async () => {
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) { window.location.href = 'index.html'; return; }
+  currentUser = session.user;
+  loadProfile();
+  loadOrders();
+  loadCart();
+
+  // Handle hash navigation
+  const hash = location.hash.replace('#','');
+  if (hash === 'orders') switchTab('orders');
+  else if (hash === 'cart') switchTab('cart');
+})();
+
+// ── TABS ──
+function switchTab(name) {
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('pane-' + name).classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+  history.replaceState(null, '', '#' + name);
+}
+
+// ── API ──
+async function apiFetch(path, opts = {}) {
+  const { data: { session } } = await sb.auth.getSession();
+  return fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+    headers: {
+      'apikey': SUPABASE_KEY,
+      'Authorization': `Bearer ${session?.access_token || SUPABASE_KEY}`,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=representation',
+      ...opts.headers
+    }, ...opts
+  });
+}
+
+// ── PROFILE ──
+async function loadProfile() {
+  const { data: profile } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
+  const name = profile?.full_name || currentUser.email;
+  document.getElementById('bigAvatar').textContent = name.charAt(0).toUpperCase();
+  document.getElementById('heroName').textContent = name;
+  document.getElementById('heroEmail').textContent = currentUser.email;
+  if (profile) {
+    document.getElementById('profName').value = profile.full_name || '';
+    document.getElementById('profPhone').value = profile.phone || '';
+    document.getElementById('profAltPhone').value = profile.alt_phone || '';
+    document.getElementById('profCity').value = profile.city || '';
+    document.getElementById('profAddress').value = profile.address || '';
+    document.getElementById('profNotes').value = profile.notes || '';
+  }
+}
+
+async function saveProfile() {
+  const data = {
+    full_name: document.getElementById('profName').value.trim(),
+    phone: document.getElementById('profPhone').value.trim(),
+    alt_phone: document.getElementById('profAltPhone').value.trim(),
+    city: document.getElementById('profCity').value.trim(),
+    address: document.getElementById('profAddress').value.trim(),
+    notes: document.getElementById('profNotes').value.trim(),
+  };
+  const txt = document.getElementById('saveProfTxt');
+  txt.textContent = '⏳ جارٍ الحفظ...';
+  const { error } = await sb.from('profiles').upsert({ id: currentUser.id, ...data });
+  txt.textContent = '💾 حفظ التغييرات';
+  if (error) { showToast('❌ حدث خطأ في الحفظ', true); return; }
+  showToast('✅ تم حفظ البيانات بنجاح');
+  loadProfile();
+}
+
+async function changePassword() {
+  const pw = document.getElementById('newPw').value;
+  const pw2 = document.getElementById('confirmPw').value;
+  if (pw.length < 8) { showToast('❌ كلمة المرور لازم تكون 8 أحرف', true); return; }
+  if (pw !== pw2) { showToast('❌ كلمتا المرور مش متطابقتين', true); return; }
+  const { error } = await sb.auth.updateUser({ password: pw });
+  if (error) { showToast('❌ حدث خطأ في تغيير كلمة المرور', true); return; }
+  showToast('✅ تم تغيير كلمة المرور');
+  document.getElementById('newPw').value = '';
+  document.getElementById('confirmPw').value = '';
+}
+
+// ── ORDERS ──
+async function loadOrders() {
+  const container = document.getElementById('ordersContainer');
+  container.innerHTML = '<div class="loading-spinner"><div class="spinner"></div></div>';
+  const { data: orders, error } = await sb.from('orders')
+    .select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false });
+
+  const count = orders?.length || 0;
+  document.getElementById('ordersCount').textContent = count;
+
+  if (error || !orders?.length) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">🛒</div>
+        <p>لا توجد طلبات بعد</p>
+        <a href="index.html">تسوق الآن</a>
+      </div>`;
+    return;
+  }
+
+  const statusMap = {
+    new: ['badge-new','🔵 جديد'],
+    processing: ['badge-processing','🟡 قيد التجهيز'],
+    shipped: ['badge-shipped','🟣 تم الشحن'],
+    delivered: ['badge-delivered','🟢 تم التسليم'],
+    cancelled: ['badge-cancelled','🔴 ملغي']
+  };
+
+  container.innerHTML = orders.map(o => {
+    const [cls, lbl] = statusMap[o.status] || ['',''];
+    return `
+    <div class="order-card">
+      <div class="order-card-head" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'">
+        <div>
+          <div class="order-num">${o.order_number}</div>
+          <div class="order-date">${new Date(o.created_at).toLocaleDateString('ar-EG',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <span style="font-size:16px;color:var(--gold);">${o.total} جنيه</span>
+          <span class="badge ${cls}">${lbl}</span>
+        </div>
+      </div>
+      <div class="order-card-body" style="display:none;">
+        <div class="order-detail-row"><span class="order-key">العطر</span><span class="order-val">${o.product_name}</span></div>
+        <div class="order-detail-row"><span class="order-key">الكمية</span><span class="order-val">${o.quantity}</span></div>
+        <div class="order-detail-row"><span class="order-key">سعر الوحدة</span><span class="order-val">${o.product_price} جنيه</span></div>
+        ${o.discount_amount > 0 ? `<div class="order-detail-row"><span class="order-key">خصم الكوبون</span><span class="order-val" style="color:var(--green);">- ${o.discount_amount} جنيه</span></div>` : ''}
+        <div class="order-detail-row"><span class="order-key">الإجمالي</span><span class="order-val" style="color:var(--gold);">${o.total} جنيه</span></div>
+        <div class="order-detail-row"><span class="order-key">العنوان</span><span class="order-val">${o.customer_address}</span></div>
+        <div class="order-detail-row"><span class="order-key">الحالة</span><span class="order-val"><span class="badge ${cls}">${lbl}</span></span></div>
+        ${o.payment_status === 'paid' ? `<div class="order-detail-row"><span class="order-key">الدفع</span><span class="order-val" style="color:var(--green);">✅ مدفوع إلكترونياً</span></div>` : ''}
+        ${o.tracking_note ? `<div class="tracking-note">📝 ${o.tracking_note}</div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── CART ──
+async function loadCart() {
+  const container = document.getElementById('cartContainer');
+  container.innerHTML = '<div class="loading-spinner"><div class="spinner"></div></div>';
+
+  // Get cart items joined with products
+  const { data, error } = await sb.from('cart_items')
+    .select('*, products(*)')
+    .eq('user_id', currentUser.id);
+
+  document.getElementById('cartCount').textContent = data?.length || 0;
+
+  if (error || !data?.length) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">🛍️</div>
+        <p>السلة فارغة</p>
+        <a href="index.html">أضف عطوراً للسلة</a>
+      </div>`;
+    return;
+  }
+
+  cartData = data;
+  renderCart();
+}
+
+function renderCart() {
+  const container = document.getElementById('cartContainer');
+  let subtotal = cartData.reduce((s, item) => s + (item.products?.price || 0) * item.quantity, 0);
+  const discount = appliedCoupon ? calcDiscount(appliedCoupon, subtotal) : 0;
+
+  // Get delivery fee from settings
+  const deliveryFee = 50; // Default, ideally load from settings
+  const total = Math.max(0, subtotal - discount) + deliveryFee;
+
+  container.innerHTML = `
+    ${cartData.map((item, i) => {
+      const p = item.products;
+      if (!p) return '';
+      return `
+      <div class="cart-item">
+        ${p.image ? `<img src="${p.image}" class="cart-thumb" alt="${p.name}" onerror="this.style.opacity=.3">` : `<div class="cart-thumb-empty">ATHR</div>`}
+        <div class="cart-info">
+          <div class="cart-name">${p.name}</div>
+          ${p.name_en ? `<div class="cart-name-en">${p.name_en}</div>` : ''}
+          <div class="cart-price">${p.price} جنيه</div>
+          <div class="cart-qty-wrap">
+            <button class="cart-qty-btn" onclick="updateCartQty(${item.id}, ${item.quantity - 1}, ${p.stock})">−</button>
+            <span class="cart-qty-num">${item.quantity}</span>
+            <button class="cart-qty-btn" onclick="updateCartQty(${item.id}, ${item.quantity + 1}, ${p.stock})">+</button>
+          </div>
+        </div>
+        <div style="text-align:left;">
+          <div style="font-size:16px;color:var(--gold);font-weight:700;">${p.price * item.quantity} جنيه</div>
+          <button class="cart-remove" onclick="removeCartItem(${item.id})">✕</button>
+        </div>
+      </div>`;
+    }).join('')}
+
+    <div class="cart-summary">
+      <div class="coupon-row">
+        <input type="text" class="coupon-input" id="couponInput" placeholder="كود خصم" value="${appliedCoupon?.code||''}">
+        <button class="coupon-btn" onclick="applyCoupon()">تطبيق</button>
+        ${appliedCoupon ? `<button class="coupon-btn" style="border-color:rgba(201,76,76,.3);color:var(--red);" onclick="removeCoupon()">إزالة</button>` : ''}
+      </div>
+      <div class="coupon-msg" id="couponMsg"></div>
+
+      <div class="cart-sum-row"><span class="sum-key">المجموع الفرعي</span><span class="sum-val">${subtotal} جنيه</span></div>
+      ${discount > 0 ? `<div class="cart-sum-row"><span class="sum-key">خصم الكوبون (${appliedCoupon.code})</span><span class="sum-val" style="color:var(--green);">− ${discount} جنيه</span></div>` : ''}
+      <div class="cart-sum-row"><span class="sum-key">رسوم التوصيل</span><span class="sum-val">${deliveryFee} جنيه</span></div>
+      <div class="cart-sum-row"><span class="sum-key">الإجمالي</span><span class="sum-val gold">${total} جنيه</span></div>
+
+      <button class="checkout-btn" onclick="checkout()"><span>✓ إتمام الطلب</span></button>
+    </div>
+  `;
+}
+
+function calcDiscount(coupon, subtotal) {
+  if (!coupon || subtotal < coupon.min_order) return 0;
+  if (coupon.discount_type === 'percent') return Math.round(subtotal * coupon.discount_value / 100);
+  return Math.min(coupon.discount_value, subtotal);
+}
+
+async function applyCoupon() {
+  const code = document.getElementById('couponInput').value.trim().toUpperCase();
+  const msg = document.getElementById('couponMsg');
+  if (!code) return;
+  const { data, error } = await sb.from('coupons')
+    .select('*').eq('code', code).eq('active', true).single();
+  if (error || !data) { msg.className = 'coupon-msg err'; msg.textContent = '❌ الكوبون غير صالح أو منتهي'; return; }
+  if (data.expires_at && new Date(data.expires_at) < new Date()) { msg.className = 'coupon-msg err'; msg.textContent = '❌ انتهت صلاحية الكوبون'; return; }
+  if (data.used_count >= data.max_uses) { msg.className = 'coupon-msg err'; msg.textContent = '❌ تم استنفاذ هذا الكوبون'; return; }
+  appliedCoupon = data;
+  msg.className = 'coupon-msg ok';
+  msg.textContent = `✅ تم تطبيق خصم ${data.discount_value}${data.discount_type==='percent'?'%':' جنيه'}`;
+  renderCart();
+}
+
+function removeCoupon() {
+  appliedCoupon = null;
+  document.getElementById('couponInput').value = '';
+  renderCart();
+}
+
+async function updateCartQty(itemId, newQty, maxStock) {
+  if (newQty < 1) { removeCartItem(itemId); return; }
+  if (newQty > maxStock) { showToast(`⚠️ الكمية المتوفرة: ${maxStock}`, true); return; }
+  await sb.from('cart_items').update({ quantity: newQty }).eq('id', itemId).eq('user_id', currentUser.id);
+  loadCart();
+}
+
+async function removeCartItem(itemId) {
+  await sb.from('cart_items').delete().eq('id', itemId).eq('user_id', currentUser.id);
+  showToast('تم الإزالة من السلة');
+  loadCart();
+}
+
+async function checkout() {
+  if (!cartData.length) return;
+  const { data: profile } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
+  if (!profile?.address || !profile?.phone) {
+    showToast('⚠️ من فضلك أكمل عنوانك ورقم هاتفك في البروفايل أولاً', true);
+    switchTab('profile');
+    return;
+  }
+
+  const subtotal = cartData.reduce((s, item) => s + (item.products?.price || 0) * item.quantity, 0);
+  const discount = appliedCoupon ? calcDiscount(appliedCoupon, subtotal) : 0;
+  const total = Math.max(0, subtotal - discount) + 50;
+  const orderNumber = 'ATHR-' + Date.now().toString().slice(-6);
+
+  // Create one order per cart item (or bundle — using first item for simplicity)
+  const firstItem = cartData[0];
+  const p = firstItem.products;
+  const cartSummary = cartData.map(i => `${i.products?.name} ×${i.quantity}`).join('، ');
+
+  const orderData = {
+    order_number: orderNumber,
+    user_id: currentUser.id,
+    product_name: cartData.length > 1 ? cartSummary : p?.name,
+    product_id: cartData.length === 1 ? p?.id : null,
+    product_price: subtotal,
+    quantity: cartData.reduce((s, i) => s + i.quantity, 0),
+    total,
+    customer_name: profile.full_name || '',
+    customer_phone: profile.phone || '',
+    customer_address: (profile.address || '') + (profile.city ? ' - ' + profile.city : ''),
+    status: 'new',
+    coupon_code: appliedCoupon?.code || null,
+    discount_amount: discount,
+    payment_method: 'cod',
+    payment_status: 'pending',
+  };
+
+  const { error } = await sb.from('orders').insert(orderData);
+  if (error) { showToast('❌ حدث خطأ في الطلب، حاول مرة أخرى', true); return; }
+
+  // Update coupon usage
+  if (appliedCoupon) {
+    await sb.from('coupons').update({ used_count: appliedCoupon.used_count + 1 }).eq('id', appliedCoupon.id);
+  }
+
+  // Clear cart
+  await sb.from('cart_items').delete().eq('user_id', currentUser.id);
+
+  // Show success
+  document.getElementById('successOrderNum').textContent = orderNumber;
+  document.getElementById('successMsg').textContent = `شكراً ${profile.full_name || ''}! سيتم التواصل معك على ${profile.phone} لتأكيد الطلب.`;
+  document.getElementById('successOverlay').classList.add('open');
+
+  appliedCoupon = null;
+  loadOrders();
+}
+
+// ── TOAST ──
+function showToast(msg, isErr = false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast' + (isErr ? ' err' : '');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+</script>
+</body>
+</html>
