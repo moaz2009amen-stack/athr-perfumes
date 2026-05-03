@@ -731,7 +731,7 @@ function filterProducts() {
   }
   const catLabels = { men: isAr?'رجالي':'Men', women: isAr?'نسائي':'Women', unisex: isAr?'مشترك':'Unisex' };
   grid.innerHTML = filtered.map(p => `
-    <div class="product-card">
+    <div class="product-card" onclick="window.location.href='product.html?id=${p.id}'" style="cursor:pointer;">
       <div class="product-img-wrap">
         ${p.image ? `<img src="${p.image}" alt="${p.name}" loading="lazy">` : `<div class="img-placeholder"><svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="1" opacity="0.3"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>ATHR</span></div>`}
         <div class="product-overlay"></div>
@@ -753,10 +753,10 @@ function filterProducts() {
           </div>
         </div>
         <div class="product-btns">
-          <button class="order-btn" onclick='handleOrderClick(${JSON.stringify(p).replace(/'/g,"&#39;")})' ${p.stock<=0?'disabled':''}>
+          <button class="order-btn" onclick='event.stopPropagation();handleOrderClick(${JSON.stringify(p).replace(/'/g,"&#39;")})' ${p.stock<=0?'disabled':''}>
             <span>${p.stock<=0?(isAr?'نفذت الكمية':'Out of Stock'):(isAr?'اطلب الآن':'Order Now')}</span>
           </button>
-          <button class="cart-btn" title="${isAr?'أضف للسلة':'Add to Cart'}" onclick='handleAddToCart(${JSON.stringify(p).replace(/'/g,"&#39;")})' ${p.stock<=0?'disabled':''}>🛍️</button>
+          <button class="cart-btn" title="${isAr?'أضف للسلة':'Add to Cart'}" onclick='event.stopPropagation();handleAddToCart(${JSON.stringify(p).replace(/'/g,"&#39;")})' ${p.stock<=0?'disabled':''}>🛍️</button>
         </div>
       </div>
     </div>
