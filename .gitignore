@@ -1,1 +1,8 @@
-Nothing should be ignored based on the provided file changes. The only modified file is `admin.html`, which is a source file and should not be added to .gitignore.
+```
+# Database setup file
+setup-database.sql
+
+# HTML files (assuming these might be generated)
+admin.html
+product.html
+```

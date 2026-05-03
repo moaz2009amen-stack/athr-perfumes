@@ -559,7 +559,7 @@ nav{
 <script>
 // ── CONFIG ──
 const SUPABASE_URL = 'https://ubkjrqeencijfxtpitvm.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVia2pycWVlbmNpamZ4dHBpdHZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ5OTQwNzEsImV4cCI6MjA2MDU3MDA3MX0.dP5K_gS_6aeUtTRT7rYaHv3yBnLxR8g9kCqPzQ5JYHM';
+const SUPABASE_KEY = 'sb_publishable_HBhjrI4K478Qid8f5XnEzQ_jmBNPkTc';
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // ── STATE ──
@@ -962,12 +962,13 @@ async function updateCartBadge() {
 async function loadReviews(productId) {
   try {
     const { data: reviews, error } = await sb
-      .from('product_reviews')
+      .from('reviews')
       .select(`
         *,
-        profiles:user_id (full_name)
+        user_id
       `)
       .eq('product_id', productId)
+      .eq('is_approved', true)
       .order('created_at', { ascending: false });
     
     if (error || !reviews || reviews.length === 0) {
@@ -1003,12 +1004,12 @@ async function loadReviews(productId) {
       <div class="review-card">
         <div class="review-header">
           <div>
-            <div class="reviewer-name">${escapeHTML(r.profiles?.full_name || 'Anonymous')}</div>
+            <div class="reviewer-name">${escapeHTML('Anonymous')}</div>
             <div class="review-date">${new Date(r.created_at).toLocaleDateString(isAr ? 'ar-EG' : 'en-US')}</div>
           </div>
           <div class="review-stars">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</div>
         </div>
-        <div class="review-text">${escapeHTML(r.review || '')}</div>
+        <div class="review-text">${escapeHTML(r.comment || '')}</div>
       </div>
     `).join('');
     
@@ -1066,11 +1067,12 @@ async function submitReview() {
     // Security: Sanitize input before sending
     const sanitizedReview = sanitizeInput(reviewText);
     
-    const { error } = await sb.from('product_reviews').insert({
+    const { error } = await sb.from('reviews').insert({
       product_id: currentProduct.id,
       user_id: currentUser.id,
       rating: currentRating,
-      review: sanitizedReview
+      comment: sanitizedReview,
+      is_approved: false
     });
     
     if (error) throw error;
