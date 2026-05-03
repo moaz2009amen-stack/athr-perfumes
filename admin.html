@@ -1023,12 +1023,27 @@ body{background:var(--black);color:var(--white);font-family:'Tajawal',sans-serif
 // ══════════════════════════════
 const SUPABASE_URL = 'https://ubkjrqeencijfxtpitvm.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_HBhjrI4K478Qid8f5XnEzQ_jmBNPkTc';
-// ⚠️ ضع إيميل الأدمن هنا — غيّره لإيميلك الحقيقي
-const ADMIN_EMAIL = 'moaz2009amen@gmail.com';
 
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
   auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false }
 });
+
+// Check admin role from user_roles table
+async function checkAdminRole(userId) {
+  try {
+    const { data, error } = await sb
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', userId)
+      .single();
+    
+    if (error || !data) return false;
+    return data.role === 'admin';
+  } catch (err) {
+    console.error('Check admin role error:', err);
+    return false;
+  }
+}
 
 // ══════════════════════════════
 // SECURITY — RATE LIMITING
@@ -1088,12 +1103,6 @@ async function doAdminLogin() {
     return;
   }
 
-  // Check admin email
-  if (email.toLowerCase() !== ADMIN_EMAIL.toLowerCase()) {
-    handleFailedAttempt();
-    return;
-  }
-
   btn.disabled = true;
   btnTxt.textContent = '⏳ جارٍ التحقق...';
 
@@ -1103,6 +1112,18 @@ async function doAdminLogin() {
     btn.disabled = false;
     btnTxt.textContent = 'دخول';
     handleFailedAttempt();
+    return;
+  }
+
+  // Check admin role from user_roles table
+  const isAdmin = await checkAdminRole(data.user.id);
+  
+  if (!isAdmin) {
+    btn.disabled = false;
+    btnTxt.textContent = 'دخول';
+    errEl.textContent = 'ليس لديك صلاحيات الأدمن';
+    errEl.style.display = 'block';
+    await sb.auth.signOut();
     return;
   }
 
@@ -1212,13 +1233,19 @@ function startSessionCountdown() {
   const { data: { session } } = await sb.auth.getSession();
   if (session) {
     const storedExp = parseInt(sessionStorage.getItem('athr_session_exp') || '0');
-    if (storedExp > Date.now() && session.user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
-      document.getElementById('loginScreen').style.display = 'none';
-      document.getElementById('adminPanel').style.display = 'block';
-      document.getElementById('adminEmail').textContent = session.user.email;
-      sessionExpiry = storedExp;
-      startSessionCountdown();
-      init();
+    if (storedExp > Date.now()) {
+      // Check admin role
+      const isAdmin = await checkAdminRole(session.user.id);
+      if (isAdmin) {
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('adminPanel').style.display = 'block';
+        document.getElementById('adminEmail').textContent = session.user.email;
+        sessionExpiry = storedExp;
+        startSessionCountdown();
+        init();
+      } else {
+        await sb.auth.signOut();
+      }
     } else {
       await sb.auth.signOut();
     }
